@@ -1,0 +1,120 @@
+.container {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.title {
+    font-size: 28px;
+    text-align: center;
+    color: #000;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.section {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 20px;
+}
+
+.section_title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.input {
+    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+    color: #34495e;
+}
+
+.cop__inputTall {
+    height: 40px;
+}
+
+.textarea {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.cop__diamondBox {
+    background: #f0f8ff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+    border: 1px solid #bdc3c7;
+}
+
+.cop__diamondTitle {
+    margin-top: 0;
+}
+
+.cop__diamondNote {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 10px;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.serviceItem {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #eee;
+}
+
+.cop__servicePrice {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.submitBtn {
+    background-color: #fff;
+    padding: 15px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.submitBtn:hover {
+    border-color: #3498db;
+    color: #3498db;
+}

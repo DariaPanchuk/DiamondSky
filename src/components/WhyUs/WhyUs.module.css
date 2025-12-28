@@ -1,0 +1,31 @@
+.whyUsSection {
+    padding: 50px 50px 0px 50px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 40px;
+    color: #000;
+}
+
+.reasonsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.reasonItem {
+    background-color: #fff;
+    border: 2px solid #eee;
+    border-radius: 15px;
+    font-size: 20px;
+    padding: 30px;
+    width: 250px;
+    color: #2c3e50;
+    transform: scale(1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}

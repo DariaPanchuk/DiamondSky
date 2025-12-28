@@ -1,0 +1,298 @@
+/* --- ОСНОВНИЙ КОНТЕЙНЕР --- */
+.container {
+    max-width: 1200px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1.2rem;
+}
+
+/* --- ШАПКА --- */
+.header {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.title {
+    font-size: 24px;
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 600;
+}
+
+.addBtn {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 2px 5px rgba(39, 174, 96, 0.3);
+}
+
+.addBtn:hover {
+    background-color: #219150;
+    transform: translateY(-1px);
+}
+
+.addBtn:active {
+    transform: translateY(0);
+}
+
+/* --- ТАБЛИЦЯ --- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.th {
+    text-align: left;
+    padding: 15px;
+    background-color: #f8f9fa;
+    color: #7f8c8d;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+    color: #34495e;
+}
+
+/* --- БЕЙДЖІ РОЛЕЙ --- */
+.roleBadge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 80px;
+}
+
+/* Кольори для різних професій */
+.role_admin {
+    background-color: #e74c3c; /* Червоний */
+    color: white;
+}
+
+.role_manager {
+    background-color: #3498db; /* Синій */
+    color: white;
+}
+
+.role_jeweler {
+    background-color: #f1c40f; /* Жовтий */
+    color: #2c3e50; /* Темний текст для контрасту */
+}
+
+.role_setter {
+    background-color: #9b59b6; /* Фіолетовий */
+    color: white;
+}
+
+.role_3d_designer {
+    background-color: #1abc9c; /* Бірюзовий */
+    color: white;
+}
+
+/* Дефолтний колір, якщо роль невідома */
+.roleBadge:not([class*="role_"]) {
+    background-color: #95a5a6;
+    color: white;
+}
+
+/* --- СТАТУСИ --- */
+.statusActive {
+    color: #27ae60;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.statusActive::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #27ae60;
+    border-radius: 50%;
+}
+
+.statusInactive {
+    color: #e74c3c;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.statusInactive::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+}
+
+/* --- КНОПКИ ДІЙ В ТАБЛИЦІ --- */
+.actionBtn {
+    background-color: white;
+    border: 1px solid #dcdcdc;
+    color: #555;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.actionBtn:hover {
+    background-color: #f5f5f5;
+    border-color: #bbb;
+    transform: scale(1.05);
+}
+
+
+/* --- МОДАЛЬНЕ ВІКНО --- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Затемнення фону */
+    backdrop-filter: blur(2px); /* Ефект розмиття */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background-color: white;
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modalTitle {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-size: 1.4rem;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.input, .select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Важливо, щоб padding не ламав ширину */
+    transition: border-color 0.2s;
+}
+
+.input:focus, .select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Чекбокс */
+.checkboxWrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+}
+
+/* --- КНОПКИ МОДАЛКИ --- */
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btnCancel {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btnCancel:hover {
+    background-color: #d0d0d0;
+}
+
+.btnSave {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btnSave:hover {
+    background-color: #2980b9;
+}

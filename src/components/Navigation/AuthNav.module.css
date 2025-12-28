@@ -1,0 +1,33 @@
+.wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.link {
+    text-decoration: none;
+    color: #34495e;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+
+.link:hover {
+    color: #3498db; /* Трохи темніший відтінок */
+}
+
+.btnRegister {
+    text-decoration: none;
+    border: 1px solid #2c3e50;
+    color: #2c3e50;
+    padding: 7px 14px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btnRegister:hover {
+    background-color: #2c3e50;
+  color: white; /* Інверсія кольорів при наведенні */
+}

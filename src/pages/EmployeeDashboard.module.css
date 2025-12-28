@@ -1,0 +1,105 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+/* --- КАРТКА ПРОФІЛЮ (ШАПКА) --- */
+.headerCard {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    border: 1px solid #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.userInfo h2 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.roleBadge {
+    display: inline-block;
+    background: #34495e;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.logoutBtn {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+    background: #c0392b;
+}
+
+/* --- НАВІГАЦІЯ (ТАБИ) --- */
+.tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    align-items: center;
+    justify-content: center;
+}
+
+.tabBtn {
+    font-size: 20px;
+    font-weight: 400;
+    padding: 10px 40px;
+    border: 2px solid #eee;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    width: 250px;
+    background: #fff;
+    color: #2c3e50;
+    border-color: #eee;
+    transform: scale(1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.tabBtn:hover {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.activeTab {
+    background: #fff;
+    color: #7f8c8d;
+}
+
+.activeTab:hover {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+/* --- КОНТЕНТ --- */
+.contentArea {
+    min-height: 400px;
+    border-radius: 8px;
+}

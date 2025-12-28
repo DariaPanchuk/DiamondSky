@@ -1,0 +1,93 @@
+.overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+
+.modal {
+    background: white; width: 600px; max-height: 90vh;
+    border-radius: 8px; overflow: hidden;
+    display: flex; flex-direction: column;
+}
+
+.header {
+    padding: 15px 20px; background: #2c3e50; color: white;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.header h3 { margin: 0; }
+.closeBtn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+
+.body { padding: 20px; overflow-y: auto; }
+
+.typeSwitcher {
+    display: flex; gap: 20px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #eee;
+}
+.typeSwitcher label { cursor: pointer; font-weight: 500; display: flex; gap: 8px; }
+
+.label { display: block; margin-bottom: 5px; font-weight: bold; color: #7f8c8d; }
+.select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+
+/* Diamond Styles */
+.filters { display: flex; gap: 10px; margin-bottom: 10px; }
+.filterSelect { flex: 1; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+
+.tableWrapper { max-height: 200px; overflow-y: auto; border: 1px solid #eee; }
+.diamondTable { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+.diamondTable th { background: #f8f9fa; position: sticky; top: 0; padding: 8px; text-align: left; }
+.diamondTable td { padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; }
+.diamondTable tr:hover { background: #f1f8ff; }
+.selectedRow { background-color: #e3f2fd !important; }
+
+/* Footer */
+.footer {
+    margin-top: 20px; padding-top: 15px; border-top: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.qtyInput { width: 60px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+.addBtn {
+    padding: 10px 20px; background: #27ae60; color: white;
+    border: none; border-radius: 4px; font-weight: bold; cursor: pointer;
+}
+.addBtn:hover { background: #219150; }
+
+/* ... overlay, modal, header ... (з попереднього) */
+
+.select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    font-size: 1em;
+    background: white;
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.diamondBox {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    border: 1px solid #eee;
+    margin-top: 10px;
+}
+
+.hint {
+    font-size: 0.85em;
+    color: #7f8c8d;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.qtyInput {
+    width: 70px;
+    padding: 8px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    text-align: center;
+}

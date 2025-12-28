@@ -1,0 +1,80 @@
+.container {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table { width: 100%; border-collapse: collapse; }
+.tableHeader { background: #f8f9fa; text-align: left; border-bottom: 2px solid #eee; color: #7f8c8d; }
+.th { padding: 15px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Рядки */
+.rowMain { border-bottom: 1px solid #eee; cursor: pointer; background-color: white; transition: background 0.2s; }
+.rowMain:hover { background-color: #f9f9f9; }
+.rowMainActive { border-bottom: none; cursor: pointer; background-color: #f1f8ff; }
+
+.td { padding: 15px; vertical-align: middle; }
+.tdIndex { padding: 15px; color: #999; }
+.tdType { padding: 15px; font-weight: bold; color: #2c3e50; }
+.arrow { padding: 15px; color: #bdc3c7; text-align: center; }
+
+/* Клієнт */
+.clientName { font-weight: 600; color: #2980b9; display: block; }
+.clientPhone { font-size: 0.85em; color: #7f8c8d; }
+
+/* Деталі */
+.rowDetails { border-bottom: 1px solid #eee; background-color: #f8f9fa; }
+.detailsWrapper { padding: 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; animation: fadeIn 0.3s; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+.detailsTitle { margin: 0 0 15px 0; color: #2c3e50; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+.detailsList { list-style: none; padding: 0; line-height: 2; font-size: 0.95em; }
+.label { font-weight: bold; color: #7f8c8d; margin-right: 8px; }
+
+.actionButtons { margin-top: 20px; display: flex; gap: 10px; }
+.btnAction { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; background: #2c3e50; }
+.btnAction:hover { background: #1a252f; }
+
+/* Статуси */
+.badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; display: inline-block; text-align: center; min-width: 80px; }
+.status_new { background-color: #e3f2fd; color: #1976d2; }
+.status_modeling { background-color: #fff3e0; color: #e67e22; }
+.status_casting { background-color: #f3e5f5; color: #8e24aa; }
+.status_setting { background-color: #e0f2f1; color: #00695c; }
+.status_done { background-color: #e8f5e9; color: #2e7d32; }
+.status_issued { background-color: #eeeeee; color: #616161; }
+
+.statusControlBox {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #eef2f5;
+    border-radius: 6px;
+    border: 1px solid #dfe6e9;
+}
+
+.statusSelect {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    flex-grow: 1;
+    font-size: 0.95em;
+    color: #2c3e50;
+}
+
+.btnSave {
+    padding: 8px 20px;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.btnSave:hover {
+    background-color: #219150;
+}

@@ -1,0 +1,170 @@
+/* src/pages/client/ClientOrders.module.css */
+
+.container {
+    background: white;
+    margin: 30px auto;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tableHeader {
+    background: #f8f9fa;
+    text-align: left;
+    border-bottom: 2px solid #eee;
+    color: #7f8c8d;
+}
+
+.th {
+    padding: 15px;
+}
+
+/* --- Головний рядок (Main Row) --- */
+.rowMain {
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    background-color: white;
+    transition: background 0.2s;
+}
+
+.rowMain:hover {
+    background-color: #f9f9f9;
+}
+
+.rowMainActive {
+    border-bottom: none;
+    cursor: pointer;
+    background-color: #f1f8ff; /* Підсвітка активного */
+}
+
+.td {
+    padding: 15px;
+}
+
+.tdIndex {
+    padding: 15px;
+    color: #999;
+}
+
+.tdType {
+    padding: 15px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.arrow {
+    padding: 15px;
+    color: #bdc3c7;
+}
+
+.priceUnknown {
+    color: #e67e22;
+}
+
+/* --- Випадаючий блок (Details) --- */
+.rowDetails {
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+.detailsWrapper {
+    padding: 20px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.detailsTitle {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+}
+
+.detailsList {
+    list-style: none;
+    padding: 0;
+    line-height: 2;
+    font-size: 0.95em;
+}
+
+.label {
+    font-weight: bold;
+    color: #7f8c8d;
+    margin-right: 8px;
+}
+
+.stoneInfo {
+    color: #2980b9;
+}
+
+/* --- Теги послуг --- */
+.servicesContainer {
+    margin-bottom: 15px;
+}
+
+.servicesList {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.serviceTag {
+    background-color: #e1ecf4;
+    color: #39739d;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    border: 1px solid #ccdef0;
+}
+
+/* --- Коментар --- */
+.commentBox {
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+    margin-top: 5px;
+    font-size: 0.9em;
+    white-space: pre-wrap;
+    color: #555;
+}
+
+/* --- Статуси (Badges) --- */
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: bold;
+    display: inline-block;
+}
+
+/* Модифікатори статусів */
+.status_new { background-color: #e3f2fd; color: #1976d2; }
+.status_modeling { background-color: #fff3e0; color: #e67e22; }
+.status_casting { background-color: #f3e5f5; color: #8e24aa; }
+.status_setting { background-color: #e0f2f1; color: #00695c; }
+.status_done { background-color: #e8f5e9; color: #2e7d32; }
+.status_issued { background-color: #eeeeee; color: #616161; }
+.status_default { background-color: #eee; color: #333; }
+
+/* Empty State */
+.emptyState {
+    text-align: center;
+    margin-top: 50px;
+    color: #7f8c8d;
+    background: #f9f9f9;
+    padding: 40px;
+    border-radius: 8px;
+}

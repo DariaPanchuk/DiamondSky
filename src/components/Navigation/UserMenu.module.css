@@ -1,0 +1,52 @@
+.wrapper {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.userInfo {
+    text-align: right;
+    font-size: 0.9em;
+    line-height: 1.2;
+}
+
+.userName {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.userRole {
+    color: #7f8c8d;
+    font-size: 0.85em;
+}
+
+.btnPrimary {
+    text-decoration: none;
+    border: 1px solid #ccc;
+    color: #7f8c8d;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease;
+}
+
+.btnPrimary:hover {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.btnLogout {
+    background: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    transition: all 0.2s ease;
+}
+
+.btnLogout:hover {
+    border-color: #e74c3c;
+    color: #e74c3c; /* Червоний колір при наведенні (вихід) */
+}
