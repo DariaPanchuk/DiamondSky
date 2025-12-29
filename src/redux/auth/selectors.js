@@ -5,7 +5,7 @@ export const selectUser = (state) => state.auth.user;
 export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
 
 // Повертає роль ('client', 'admin'...)
-export const selectUserRole = (state) => state.auth.role;
+export const selectUserRole = (state) => state.auth.profile?.role;
 
 // Повертає true, якщо додаток ще думає (перевіряє сесію)
 export const selectIsRefreshing = (state) => state.auth.isRefreshing;
