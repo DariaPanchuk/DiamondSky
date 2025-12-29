@@ -422,21 +422,49 @@ export const fetchServicesDictionary = createAsyncThunk(
 // 2. Додати послугу до виробу
 export const addServiceToItem = createAsyncThunk(
     'orders/addService',
-    async ({ itemId, serviceId, price }, { dispatch, rejectWithValue }) => {
+    async ({ orderId, itemId, serviceId, price }, { rejectWithValue, dispatch }) => {
         try {
-            const { error } = await supabase
+            // 1. Додаємо запис про послугу в таблицю order_item_services
+            const { error: serviceError } = await supabase
                 .from('order_item_services')
-                .insert({
-                    order_item_id: itemId,
-                    service_id: serviceId,
-                    price: price
-                });
+                .insert([{ 
+                    order_item_id: itemId, 
+                    service_id: serviceId, 
+                    price: price 
+                }]);
 
-            if (error) throw error;
+            if (serviceError) throw serviceError;
 
-            // Після додавання оновлюємо список замовлень, щоб побачити зміни
-            dispatch(fetchAllOrders()); 
-            return;
+            // --- ВИПРАВЛЕННЯ ЦІНИ ПОЧИНАЄТЬСЯ ТУТ ---
+
+            // 2. Отримуємо поточну ціну замовлення з бази
+            const { data: currentOrder, error: fetchError } = await supabase
+                .from('orders')
+                .select('total_price')
+                .eq('id', orderId)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            // 3. Рахуємо нову суму (Стара ціна + Ціна послуги)
+            const oldTotal = Number(currentOrder.total_price || 0);
+            const servicePrice = Number(price || 0);
+            const newTotal = oldTotal + servicePrice;
+
+            // 4. Оновлюємо замовлення з НОВОЮ сумою
+            const { error: updateError } = await supabase
+                .from('orders')
+                .update({ total_price: newTotal })
+                .eq('id', orderId);
+
+            if (updateError) throw updateError;
+
+            // ----------------------------------------
+
+            // 5. Оновлюємо список на екрані
+            dispatch(fetchAllOrders());
+            return { orderId, success: true };
+
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -446,17 +474,51 @@ export const addServiceToItem = createAsyncThunk(
 // 3. Видалити послугу
 export const deleteServiceFromItem = createAsyncThunk(
     'orders/deleteService',
-    async ({ serviceRecordId }, { dispatch, rejectWithValue }) => {
+    async ({ orderId, serviceRecordId }, { rejectWithValue, dispatch }) => {
         try {
-            const { error } = await supabase
+            // 1. Спочатку дізнаємось ціну послуги, яку видаляємо (щоб відняти її)
+            const { data: serviceToDelete, error: findError } = await supabase
+                .from('order_item_services')
+                .select('price')
+                .eq('id', serviceRecordId)
+                .single();
+
+            if (findError) throw findError;
+            const priceToSubtract = Number(serviceToDelete.price || 0);
+
+            // 2. Видаляємо послугу
+            const { error: deleteError } = await supabase
                 .from('order_item_services')
                 .delete()
-                .eq('id', serviceRecordId); // Видаляємо конкретний запис зв'язку
+                .eq('id', serviceRecordId);
 
-            if (error) throw error;
+            if (deleteError) throw deleteError;
+
+            // 3. Отримуємо поточну ціну замовлення
+            const { data: currentOrder, error: fetchError } = await supabase
+                .from('orders')
+                .select('total_price')
+                .eq('id', orderId)
+                .single();
+
+            if (fetchError) throw fetchError;
+
+            // 4. Віднімаємо ціну
+            const currentTotal = Number(currentOrder.total_price || 0);
+            // Захист від мінусової ціни (якщо раптом щось пішло не так)
+            const newTotal = Math.max(0, currentTotal - priceToSubtract);
+
+            // 5. Оновлюємо замовлення
+            const { error: updateError } = await supabase
+                .from('orders')
+                .update({ total_price: newTotal })
+                .eq('id', orderId);
+
+            if (updateError) throw updateError;
 
             dispatch(fetchAllOrders());
-            return;
+            return { orderId, success: true };
+
         } catch (error) {
             return rejectWithValue(error.message);
         }
