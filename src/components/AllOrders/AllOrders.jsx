@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { 
     fetchAllOrders, 
@@ -179,10 +179,10 @@ const AllOrders = () => {
                         const employeeName = item?.employees?.full_name || '—';
 
                         return (
-                            <>
+                            <React.Fragment key={order.id}>
                                 {/* --- ГОЛОВНИЙ РЯДОК --- */}
-                                <tr 
-                                    key={order.id} 
+                                <tr
+                                    key={order.id}
                                     onClick={() => toggleOrder(order)}
                                     className={isOpen ? css.rowMainActive : css.rowMain}
                                 >
@@ -191,7 +191,7 @@ const AllOrders = () => {
                                     <td className={css.td}>
                                         <div>{new Date(order.created_at).toLocaleDateString()}</div>
                                         {order.deadline && (
-                                            <div style={{fontSize: '0.8em', color: '#e74c3c'}}>
+                                            <div style={{ fontSize: '0.8em', color: '#e74c3c' }}>
                                                 до {new Date(order.deadline).toLocaleDateString()}
                                             </div>
                                         )}
@@ -204,12 +204,12 @@ const AllOrders = () => {
 
                                     <td className={css.td} onClick={(e) => isEditing && e.stopPropagation()}>
                                         {isEditing ? (
-                                            <select 
-                                                name="employee_id" 
+                                            <select
+                                                name="employee_id"
                                                 className={css.selectField}
-                                                value={formData.employee_id} 
+                                                value={formData.employee_id}
                                                 onChange={handleInputChange}
-                                                style={{width: '100%', minWidth: '120px'}}
+                                                style={{ width: '100%', minWidth: '120px' }}
                                             >
                                                 <option value="">— Не призначено —</option>
                                                 {(employeesList || []).map(emp => (
@@ -219,7 +219,7 @@ const AllOrders = () => {
                                                 ))}
                                             </select>
                                         ) : (
-                                            <span style={{color: order.employees ? '#27ae60' : '#ccc', fontWeight: 500}}>
+                                            <span style={{ color: order.employees ? '#27ae60' : '#ccc', fontWeight: 500 }}>
                                                 {employeeName}
                                             </span>
                                         )}
@@ -251,14 +251,14 @@ const AllOrders = () => {
                                                         
                                                         {/* Розмір */}
                                                         <li>
-                                                            <span className={css.label}>Розмір:</span> 
+                                                            <span className={css.label}>Розмір:</span>
                                                             {isEditing ? (
                                                                 <input type="text" name="size" className={css.inputField} value={formData.size} onChange={handleInputChange} />
                                                             ) : (item?.size || '—')}
                                                         </li>
                                                         {/* Вага */}
                                                         <li>
-                                                            <span className={css.label}>Вага (г):</span> 
+                                                            <span className={css.label}>Вага (г):</span>
                                                             {isEditing ? (
                                                                 <input type="number" name="weight_g" className={css.inputField} value={formData.weight_g} onChange={handleInputChange} />
                                                             ) : (item?.weight_g || '—')}
@@ -267,7 +267,7 @@ const AllOrders = () => {
                                                         {/* КАМЕНІ */}
                                                         <li>
                                                             <span className={css.label}>Вставка:</span>
-                                                            <div style={{marginTop: '5px'}}>
+                                                            <div style={{ marginTop: '5px' }}>
                                                                 {item?.stones && item.stones.length > 0 ? (
                                                                     item.stones.map((st, i) => {
                                                                         
@@ -277,11 +277,11 @@ const AllOrders = () => {
                                                                         if (st.catalog_stone) {
                                                                             // 1. Пріоритет: Якщо це камінь з каталогу
                                                                             displayText = `${st.catalog_stone.name} (${st.catalog_stone.shape})`;
-                                                                        } 
+                                                                        }
                                                                         else if (st.description) {
                                                                             // 2. Пріоритет: Якщо це діамант під замовлення (беремо опис з бази)
                                                                             displayText = st.description;
-                                                                        } 
+                                                                        }
                                                                         else {
                                                                             // 3. Якщо пусто і там, і там (помилка даних)
                                                                             displayText = 'Невідомий камінь';
@@ -289,14 +289,14 @@ const AllOrders = () => {
                                                                         // ----------------------------------
 
                                                                         return (
-                                                                            <div key={i} className={css.serviceTag} style={{marginBottom: '5px'}}>
+                                                                            <div key={i} className={css.serviceTag} style={{ marginBottom: '5px' }}>
                                                                                 {displayText} - {st.quantity} шт.
                                                                                 
                                                                                 {isEditing && (
-                                                                                    <span 
-                                                                                        className={css.deleteCross} 
-                                                                                        onClick={() => handleDeleteStone(order.id, st.id)} 
-                                                                                        style={{marginLeft: '8px'}}
+                                                                                    <span
+                                                                                        className={css.deleteCross}
+                                                                                        onClick={() => handleDeleteStone(order.id, st.id)}
+                                                                                        style={{ marginLeft: '8px' }}
                                                                                     >
                                                                                         ×
                                                                                     </span>
@@ -305,15 +305,15 @@ const AllOrders = () => {
                                                                         )
                                                                     })
                                                                 ) : (
-                                                                    <span style={{color: '#999', fontStyle: 'italic'}}>Без каменю</span>
+                                                                    <span style={{ color: '#999', fontStyle: 'italic' }}>Без каменю</span>
                                                                 )}
                                                             </div>
 
                                                             {/* Кнопка додавання каменю */}
                                                             {isEditing && (
-                                                                <button 
-                                                                    className={css.btnAddSmall} 
-                                                                    style={{marginTop: '5px'}}
+                                                                <button
+                                                                    className={css.btnAddSmall}
+                                                                    style={{ marginTop: '5px' }}
                                                                     onClick={() => openStoneModal(order.id, item.id)}
                                                                 >
                                                                     + Додати камінь
@@ -343,7 +343,7 @@ const AllOrders = () => {
                                                         {/* ПОСЛУГИ */}
                                                         <li>
                                                             <span className={css.label}>Послуги:</span>
-                                                            <div style={{display: 'flex', flexWrap: 'wrap', gap: '5px', margin: '5px 0'}}>
+                                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', margin: '5px 0' }}>
                                                                 {item?.services?.map((srv, i) => (
                                                                     <span key={i} className={css.serviceTag}>
                                                                         {srv.service_dict?.label} ({srv.price})
@@ -355,7 +355,7 @@ const AllOrders = () => {
                                                             </div>
 
                                                             {isEditing && (
-                                                                <div style={{display: 'flex', gap: '5px'}}>
+                                                                <div style={{ display: 'flex', gap: '5px' }}>
                                                                     <select className={css.selectField} value={newServiceId} onChange={(e) => setNewServiceId(e.target.value)}>
                                                                         <option value="">+ Додати послугу</option>
                                                                         {availableServices.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
@@ -368,7 +368,7 @@ const AllOrders = () => {
 
                                                     {/* БЛОК РЕДАГУВАННЯ СТАТУСУ */}
                                                     <div className={css.editBlock}>
-                                                        <div style={{marginBottom: '10px'}}>
+                                                        <div style={{ marginBottom: '10px' }}>
                                                             <span className={css.label}>Статус:</span>
                                                             {isEditing ? (
                                                                 <select name="status" className={css.selectField} value={formData.status} onChange={handleInputChange}>
@@ -382,7 +382,7 @@ const AllOrders = () => {
                                                             {isEditing ? (
                                                                 <textarea name="order_comment" className={css.textareaField} value={formData.order_comment} onChange={handleInputChange} />
                                                             ) : (
-                                                                <p style={{fontSize: '0.9em', color: '#555', marginTop: '5px'}}>{order.order_comment || '—'}</p>
+                                                                <p style={{ fontSize: '0.9em', color: '#555', marginTop: '5px' }}>{order.order_comment || '—'}</p>
                                                             )}
                                                         </div>
 
@@ -410,7 +410,7 @@ const AllOrders = () => {
                                         </td>
                                     </tr>
                                 )}
-                            </>
+                            </React.Fragment>
                         );
                     })}
                 </tbody>
