@@ -92,14 +92,32 @@ const AllOrders = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSave = (orderId, itemId) => {
-        dispatch(updateOrderFull({
-            orderId, 
-            itemId, 
-            updates: formData
-        }));
-        setEditingOrderId(null);
-    };
+const handleSave = (orderId, itemId) => {
+    // 1. Створюємо копію даних, щоб почистити їх
+    const cleanUpdates = { ...formData };
+
+    // 2. ВАЖЛИВО: Якщо ID пустий рядок — робимо його null
+    // База даних прийме null, але не прийме ""
+    if (cleanUpdates.employee_id === '') {
+        cleanUpdates.employee_id = null;
+    }
+
+    // 3. Те саме для числових полів (якщо стерли вагу/розмір)
+    if (cleanUpdates.weight_g === '') cleanUpdates.weight_g = null;
+    if (cleanUpdates.size === '') cleanUpdates.size = null;
+    
+    // Перетворення рядків у числа (на всяк випадок)
+    if (cleanUpdates.total_price) cleanUpdates.total_price = Number(cleanUpdates.total_price);
+
+    console.log("Відправляємо на сервер:", cleanUpdates); // Для перевірки
+
+    dispatch(updateOrderFull({
+        orderId, 
+        itemId, 
+        updates: cleanUpdates 
+    }));
+    setEditingOrderId(null);
+};
 
     // --- Логіка Послуг ---
     const handleAddService = (orderId, itemId) => {
