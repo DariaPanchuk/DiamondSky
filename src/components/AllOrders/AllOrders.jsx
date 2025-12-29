@@ -179,7 +179,7 @@ const AllOrders = () => {
                         const employeeName = item?.employees?.full_name || '—';
 
                         return (
-                            <>
+                            <React.Fragment key={order.id}>
                                 {/* --- ГОЛОВНИЙ РЯДОК --- */}
                                 <tr 
                                     key={order.id} 
@@ -410,7 +410,7 @@ const AllOrders = () => {
                                         </td>
                                     </tr>
                                 )}
-                            </>
+                            </React.Fragment>
                         );
                     })}
                 </tbody>
