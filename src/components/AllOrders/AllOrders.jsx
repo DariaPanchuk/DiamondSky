@@ -93,29 +93,69 @@ const AllOrders = () => {
     };
 
 const handleSave = (orderId, itemId) => {
-    // 1. Створюємо копію даних, щоб почистити їх
-    const cleanUpdates = { ...formData };
+    // 1. Знаходимо оригінальні дані (те, що зараз в базі)
+    const originalOrder = orders.find(o => o.id === orderId);
+    const originalItem = originalOrder?.items?.find(i => i.id === itemId);
 
-    // 2. ВАЖЛИВО: Якщо ID пустий рядок — робимо його null
-    // База даних прийме null, але не прийме ""
-    if (cleanUpdates.employee_id === '') {
-        cleanUpdates.employee_id = null;
+    if (!originalOrder) return;
+
+    const updates = {}; // Сюди складемо ТІЛЬКИ зміни
+
+    // --- Допоміжна функція для порівняння ---
+    // Вона перевіряє: чи змінилось значення? Якщо так - записує нове (очищене від "")
+    const checkChange = (key, formValue, originalValue) => {
+        // Якщо у формі пустий рядок -> це null
+        const cleanFormValue = formValue === '' ? null : formValue;
+        
+        // Приводимо до рядка для надійного порівняння (щоб 5 не відрізнялось від "5")
+        // Але обережно з null (null != undefined)
+        if (String(cleanFormValue) !== String(originalValue || null)) {
+            // Якщо значення різні -> додаємо в updates
+            updates[key] = cleanFormValue;
+        }
+    };
+
+    // --- 2. Порівнюємо поля ЗАМОВЛЕННЯ ---
+    
+    // Ціна (конвертуємо у число для порівняння, якщо не null)
+    const formPrice = formData.total_price === '' ? 0 : Number(formData.total_price);
+    if (formPrice !== (originalOrder.total_price || 0)) {
+        updates.total_price = formPrice;
     }
 
-    // 3. Те саме для числових полів (якщо стерли вагу/розмір)
-    if (cleanUpdates.weight_g === '') cleanUpdates.weight_g = null;
-    if (cleanUpdates.size === '') cleanUpdates.size = null;
-    
-    // Перетворення рядків у числа (на всяк випадок)
-    if (cleanUpdates.total_price) cleanUpdates.total_price = Number(cleanUpdates.total_price);
+    // Статус
+    checkChange('status', formData.status, originalOrder.status);
 
-    console.log("Відправляємо на сервер:", cleanUpdates); // Для перевірки
+    // Коментар
+    checkChange('order_comment', formData.order_comment, originalOrder.order_comment);
+
+    // Дедлайн (треба обрізати час у оригіналу '2025-05-05T...' -> '2025-05-05')
+    const origDeadline = originalOrder.deadline ? originalOrder.deadline.split('T')[0] : null;
+    checkChange('deadline', formData.deadline, origDeadline);
+
+
+    // --- 3. Порівнюємо поля ТОВАРУ (якщо він є) ---
+    if (originalItem) {
+        checkChange('size', formData.size, originalItem.size);
+        checkChange('weight_g', formData.weight_g, originalItem.weight_g);
+        checkChange('employee_id', formData.employee_id, originalItem.employee_id);
+    }
+
+    // --- 4. Відправляємо, ТІЛЬКИ якщо є зміни ---
+    if (Object.keys(updates).length === 0) {
+        alert("Ви нічого не змінили!");
+        setEditingOrderId(null); // Просто закриваємо режим редагування
+        return;
+    }
+
+    console.log("Відправляємо тільки зміни:", updates);
 
     dispatch(updateOrderFull({
         orderId, 
         itemId, 
-        updates: cleanUpdates 
+        updates // Відлетять тільки змінені поля
     }));
+    
     setEditingOrderId(null);
 };
 
