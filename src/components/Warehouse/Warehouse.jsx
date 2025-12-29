@@ -35,42 +35,64 @@ const Warehouse = () => {
         fetchData();
     }, []);
 
-    const fetchData = async () => {
+const fetchData = async () => {
         setLoading(true);
         try {
-            // 1. Метали
-            const { data: mData } = await supabase.from('warehouse_metals').select(`*, dict_metals(label, probe)`).order('metal_id');
+            // --- 1. МЕТАЛИ (Нова логіка: Довідник + Склад) ---
+            // А. Беремо всі можливі метали з довідника
+            const { data: allMetalsDict } = await supabase
+                .from('dict_metals')
+                .select('*')
+                .order('label');
 
-            // 2. Діаманти
+            // Б. Беремо поточні залишки зі складу
+            const { data: warehouseStock } = await supabase
+                .from('warehouse_metals')
+                .select('*');
+
+            // В. Об'єднуємо: якщо металу немає на складі, ставимо 0
+            const mergedMetals = allMetalsDict.map(dictMetal => {
+                const stockRecord = warehouseStock.find(w => w.metal_id === dictMetal.id);
+                return {
+                    metal_id: dictMetal.id,
+                    balance_g: stockRecord ? stockRecord.balance_g : 0, // Якщо запису немає — 0
+                    dict_metals: { 
+                        label: dictMetal.label, 
+                        probe: dictMetal.probe 
+                    }
+                };
+            });
+
+            // --- 2. ДІАМАНТИ ---
             const { data: dData } = await supabase.from('warehouse_diamonds').select('*').eq('status', 'available').order('created_at', { ascending: false });
 
-            // 3. ПРОСТІ КАМЕНІ
+            // --- 3. ПРОСТІ КАМЕНІ ---
             const { data: sData } = await supabase
                 .from('catalog_simple_stones')
                 .select('*')
                 .order('stock_quantity', { ascending: false });
 
-            // 4. Довідники
-            const [met, shp, col, clr] = await Promise.all([
-                supabase.from('dict_metals').select('*'),
+            // --- 4. ДОВІДНИКИ (Для випадаючих списків) ---
+            const [shp, col, clr] = await Promise.all([
                 supabase.from('dict_diamond_shapes').select('*'),
                 supabase.from('dict_diamond_colors').select('*'),
                 supabase.from('dict_diamond_clarity').select('*'),
             ]);
 
-            setMetalsInventory(mData || []);
+            // ЗБЕРІГАЄМО В СТЕЙТ
+            setMetalsInventory(mergedMetals || []); 
             setDiamondsInventory(dData || []);
             setSimpleStonesInventory(sData || []);
             
             setDicts({
-                metals: met.data || [],
+                metals: allMetalsDict || [], 
                 shapes: shp.data || [],
                 colors: col.data || [],
                 clarities: clr.data || []
             });
 
-            // Дефолтні значення
-            if (met.data?.[0]) setMetalOp(prev => ({ ...prev, metal_id: met.data[0].id }));
+            // Дефолтні значення для форм
+            if (allMetalsDict?.[0]) setMetalOp(prev => ({ ...prev, metal_id: allMetalsDict[0].id }));
             if (sData?.[0]) setSimpleOp(prev => ({ ...prev, stone_id: sData[0].id }));
 
         } catch (error) {
@@ -91,22 +113,40 @@ const Warehouse = () => {
             const isPositive = ['supply', 'scrap_in', 'return'].includes(metalOp.operation_type);
             const change = isPositive ? amount : -amount;
 
-            // Лог
+            // 1. Записуємо в ЛОГ
             await supabase.from('warehouse_log').insert([{
-                employee_id: employeeId, resource_type: 'metal', resource_id: metalOp.metal_id,
-                amount_change: change, operation_type: metalOp.operation_type, description: metalOp.description
+                employee_id: employeeId, 
+                resource_type: 'metal', 
+                resource_id: metalOp.metal_id,
+                amount_change: change, 
+                operation_type: metalOp.operation_type, 
+                description: metalOp.description
             }]);
 
-            // Оновлення балансу
-            const current = metalsInventory.find(m => m.metal_id === metalOp.metal_id);
-            await supabase.from('warehouse_metals').update({ 
-                balance_g: (current?.balance_g || 0) + change, updated_at: new Date() 
-            }).eq('metal_id', metalOp.metal_id);
+            // 2. ОНОВЛЮЄМО БАЛАНС (UPSERT)
+            // Знаходимо поточний баланс у нашому списку (там вже є 0, якщо запису немає)
+            const currentMetal = metalsInventory.find(m => m.metal_id === metalOp.metal_id);
+            const currentBalance = currentMetal ? currentMetal.balance_g : 0;
+            const newBalance = currentBalance + change;
+
+            if (newBalance < 0) return alert("Недостатньо металу на складі!");
+
+            // Використовуємо UPSERT: Створить запис, якщо його немає, або оновить, якщо є
+            const { error } = await supabase.from('warehouse_metals').upsert({ 
+                metal_id: metalOp.metal_id,
+                balance_g: newBalance,
+                updated_at: new Date() 
+            });
+
+            if (error) throw error;
 
             alert('Успішно!');
             setMetalOp({ ...metalOp, amount: '', description: '' });
-            fetchData();
-        } catch (err) { alert(err.message); }
+            fetchData(); // Оновлюємо таблицю
+        } catch (err) { 
+            console.error(err);
+            alert(err.message); 
+        }
     };
 
     // --- ОПЕРАЦІЇ З ПРОСТИМИ КАМЕНЯМИ ---
