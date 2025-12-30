@@ -3,6 +3,7 @@ import { authReducer } from './auth/slice';
 import { ordersReducer } from './orders/slice';
 import { employeesReducer } from './employees/slice';
 import { clientsReducer } from './clients/slice';
+import { warehouseReducer } from './warehouse/slice';
 
 export const store = configureStore({
     reducer: {
@@ -10,9 +11,6 @@ export const store = configureStore({
       orders: ordersReducer,
       employees: employeesReducer,
       clients: clientsReducer,
-        // Сюди ми пізніше додамо інші редюсери, наприклад:
-        // orders: ordersReducer,
-        // products: productsReducer,
+      warehouse: warehouseReducer,
     },
-  // Redux Toolkit автоматично додає thunk middleware та перевірки devtools
 });
