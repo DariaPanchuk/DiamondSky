@@ -33,34 +33,32 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/portfolio" element={<PortfolioPage />} />
-      <Route path="/about" element={<AboutPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/portfolio" element={<PortfolioPage />} />
+        <Route path="/about" element={<AboutPage />} />
 
-      <Route
-        path="/client"
-        element={
-          <ProtectedRoute allowedRoles={['client']}>
-            <ClientDashboard />
-          </ProtectedRoute>
-        }
-      >
-      </Route>
+        <Route
+          path="/client"
+          element={
+            <ProtectedRoute allowedRoles={['client']}>
+              <ClientDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-      <Route
-        path="/employee"
-        element={
-          <ProtectedRoute allowedRoles={['admin', 'manager', 'jeweler']}>
-            <EmployeeDashboard />
-          </ProtectedRoute>
-        }
-      >
-      </Route>
+        <Route
+          path="/employee"
+          element={
+            <ProtectedRoute allowedRoles={['admin', 'manager', 'jeweler']}>
+              <EmployeeDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
+      </Route>
     </Routes>
   );
 }
