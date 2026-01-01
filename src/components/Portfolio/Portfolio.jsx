@@ -71,8 +71,9 @@ const Portfolio = () => {
             <div className={css.categoriesGrid}>
                 {CATEGORY_GROUPS.map((cat) => {
                     const isActive = activeCategory === cat.id;
-                    const parts = cat.label.split(" ");
-                    const text = parts.slice(1).join(" ");
+                    //const parts = cat.label.split(" ");
+                    //const text = parts.slice(1).join(" ");
+                    const text = cat.label;
 
                     return (
                         <button
