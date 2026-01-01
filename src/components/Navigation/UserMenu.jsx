@@ -2,8 +2,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { logOut } from '../../redux/auth/operations';
 import { selectUser, selectUserRole } from '../../redux/auth/selectors';
-
-// 👇 Імпорт стилів
 import css from './UserMenu.module.css';
 
 const UserMenu = () => {

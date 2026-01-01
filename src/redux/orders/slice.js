@@ -8,15 +8,14 @@ const initialState = {
         simple: [],
         diamonds: []
     },
-    isLoading: false, // Чи крутиться спіннер
-    error: null,      // Повідомлення про помилку
+    isLoading: false, 
+    error: null,      
 };
 
 const ordersSlice = createSlice({
     name: 'orders',
     initialState,
     reducers: {
-        // Тут можна додати фільтри або очищення списку при виході
         clearOrders: (state) => {
         state.items = [];
         state.error = null;
@@ -24,14 +23,13 @@ const ordersSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // --- FETCH ORDERS ---
             .addCase(fetchOrders.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(fetchOrders.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.items = action.payload; // Записуємо отримані замовлення
+                state.items = action.payload;
             })
             .addCase(fetchOrders.rejected, (state, action) => {
                 state.isLoading = false;
@@ -45,7 +43,6 @@ const ordersSlice = createSlice({
             })
             .addCase(addOrder.fulfilled, (state, action) => {
                 state.isLoading = false;
-                // Додаємо нове замовлення на початок списку
                 state.items.unshift(action.payload);
             })
             .addCase(addOrder.rejected, (state, action) => {
@@ -58,7 +55,6 @@ const ordersSlice = createSlice({
             })
             .addCase(deleteOrder.fulfilled, (state, action) => {
                 state.isLoading = false;
-                // Фільтруємо масив: залишаємо всі замовлення, крім того, що видалили
                 state.items = state.items.filter(order => order.id !== action.payload);
             })
             .addCase(deleteOrder.rejected, (state, action) => {
@@ -68,12 +64,11 @@ const ordersSlice = createSlice({
             .addCase(fetchJewelerOrders.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
-                state.items = []; // Очищаємо старі дані (опціонально)
+                state.items = []; 
             })
             .addCase(fetchJewelerOrders.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.error = null;
-                // Записуємо отримані дані в той самий масив items
                 state.items = action.payload;
             })
             .addCase(fetchJewelerOrders.rejected, (state, action) => {
@@ -81,14 +76,12 @@ const ordersSlice = createSlice({
                 state.error = action.payload;
             })
             .addCase(updateOrderStatus.fulfilled, (state, action) => {
-                // Знаходимо замовлення в списку і змінюємо йому статус
                 const index = state.items.findIndex(order => order.id === action.payload.id);
                 if (index !== -1) {
                     state.items[index].status = action.payload.status;
                 }
             })
             .addCase(updateOrderFull.fulfilled, (state, action) => {
-                // Знаходимо старе замовлення і замінюємо його повністю на нове
                 const index = state.items.findIndex(order => order.id === action.payload.id);
                 if (index !== -1) {
                     state.items[index] = action.payload;

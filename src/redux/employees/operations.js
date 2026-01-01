@@ -1,7 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../../config/supabaseClient';
 
-// Отримання всіх (вже було)
 export const fetchEmployees = createAsyncThunk(
     'employees/fetchAll',
     async (_, { rejectWithValue }) => {
@@ -18,7 +17,6 @@ export const fetchEmployees = createAsyncThunk(
     }
 );
 
-// Додавання нового
 export const addEmployee = createAsyncThunk(
     'employees/add',
     async (employeeData, { rejectWithValue, dispatch }) => {
@@ -29,14 +27,13 @@ export const addEmployee = createAsyncThunk(
 
             if (error) throw error;
             
-            dispatch(fetchEmployees()); // Оновлюємо список
+            dispatch(fetchEmployees()); 
         } catch (error) {
             return rejectWithValue(error.message);
         }
     }
 );
 
-// Оновлення існуючого
 export const updateEmployee = createAsyncThunk(
     'employees/update',
     async ({ id, updates }, { rejectWithValue, dispatch }) => {

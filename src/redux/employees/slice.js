@@ -10,7 +10,6 @@ const employeesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // --- FETCH (Отримання списку) ---
             .addCase(fetchEmployees.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -23,29 +22,23 @@ const employeesSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
-
-            // --- ADD (Додавання) ---
             .addCase(addEmployee.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(addEmployee.fulfilled, (state) => {
                 state.isLoading = false;
-                // Список не чіпаємо, бо операція сама викличе fetchEmployees
             })
             .addCase(addEmployee.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload;
             })
-
-            // --- UPDATE (Оновлення) ---
             .addCase(updateEmployee.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
             })
             .addCase(updateEmployee.fulfilled, (state) => {
                 state.isLoading = false;
-                // Список не чіпаємо, бо операція сама викличе fetchEmployees
             })
             .addCase(updateEmployee.rejected, (state, action) => {
                 state.isLoading = false;

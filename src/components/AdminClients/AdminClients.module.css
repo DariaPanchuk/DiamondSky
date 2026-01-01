@@ -1,4 +1,3 @@
-/* --- ОСНОВНИЙ КОНТЕЙНЕР --- */
 .container {
     padding: 20px;
     max-width: 1200px;
@@ -15,7 +14,6 @@
     font-size: 1.2rem;
 }
 
-/* --- ШАПКА --- */
 .header {
     display: flex;
     justify-content: right;
@@ -54,7 +52,6 @@
     transform: translateY(0);
 }
 
-/* --- ТАБЛИЦЯ --- */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -79,7 +76,6 @@
     color: #34495e;
 }
 
-/* --- КНОПКИ ДІЙ В ТАБЛИЦІ --- */
 .actionBtn {
     background-color: white;
     border: 1px solid #dcdcdc;
@@ -101,7 +97,6 @@
     transform: scale(1.05);
 }
 
-/* --- МОДАЛЬНЕ ВІКНО --- */
 .overlay {
     position: fixed;
     top: 0;
@@ -165,12 +160,11 @@
 }
 
 .input:focus, .select:focus {
-    border-color: #8e44ad; /* Фіолетовий акцент */
+    border-color: #8e44ad;
     outline: none;
     box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.1);
 }
 
-/* --- КНОПКИ МОДАЛКИ --- */
 .modalActions {
     display: flex;
     justify-content: flex-end;
@@ -196,7 +190,7 @@
 }
 
 .btnSave {
-    background-color: #8e44ad; /* Фіолетовий */
+    background-color: #8e44ad;
     color: white;
     border: none;
     padding: 10px 25px;

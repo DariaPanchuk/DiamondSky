@@ -13,10 +13,8 @@ import css from './EmployeeDashboard.module.css';
 const EmployeeDashboard = () => {
     const role = useSelector(selectUserRole); 
 
-    // Стан активної вкладки (за замовчуванням 'orders')
     const [activeTab, setActiveTab] = useState('orders');
 
-    // Хелпер для визначення прав доступу
     const isAdmin = role === 'admin';
     const isManager = role === 'admin' || role === 'manager';
     const isJeweler = role === 'jeweler';
@@ -24,10 +22,8 @@ const EmployeeDashboard = () => {
     return (
         <div className={css.container}>
 
-            {/* 2. ТАБИ (КНОПКИ) */}
             <div className={css.tabs}>
                 
-                {/* Вкладка ЗАМОВЛЕННЯ (Є у всіх, але різна) */}
                 <button 
                     onClick={() => setActiveTab('orders')}
                     className={`${css.tabBtn} ${activeTab === 'orders' ? css.activeTab : ''}`}
@@ -35,7 +31,6 @@ const EmployeeDashboard = () => {
                     {isJeweler ? 'Мої завдання' : 'Всі замовлення'}
                 </button>
 
-                {/* Вкладки для АДМІНА та МЕНЕДЖЕРА */}
                 {isManager && (
                     <>
                         <button 
@@ -53,7 +48,6 @@ const EmployeeDashboard = () => {
                     </>
                 )}
 
-                {/* Вкладка тільки для АДМІНА */}
                 {isAdmin && (
                     <button 
                         onClick={() => setActiveTab('employees')}
@@ -64,17 +58,14 @@ const EmployeeDashboard = () => {
                 )}
             </div>
 
-            {/* 3. ОБЛАСТЬ КОНТЕНТУ */}
             <div className={css.contentArea}>
                 
-                {/* Логіка відображення: ЗАМОВЛЕННЯ */}
                 {activeTab === 'orders' && (
                     isJeweler 
                         ? <div style={{padding: 20}}><JewelerOrders /></div> 
                         : <div style={{padding: 20}}><AllOrders/></div>
                 )}
 
-                {/* Логіка відображення: ІНШІ ВКЛАДКИ */}
                 {activeTab === 'clients' && (
                     <div style={{padding: 20}}><AdminClients/></div>
                 )}

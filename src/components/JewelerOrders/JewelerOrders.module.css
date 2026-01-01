@@ -10,7 +10,6 @@
 .tableHeader { background: #f8f9fa; text-align: left; border-bottom: 2px solid #eee; color: #7f8c8d; }
 .th { padding: 15px; font-size: 0.9em; text-transform: uppercase; letter-spacing: 0.5px; }
 
-/* Рядки */
 .rowMain { border-bottom: 1px solid #eee; cursor: pointer; background-color: white; transition: background 0.2s; }
 .rowMain:hover { background-color: #f9f9f9; }
 .rowMainActive { border-bottom: none; cursor: pointer; background-color: #f1f8ff; }
@@ -20,11 +19,9 @@
 .tdType { padding: 15px; font-weight: bold; color: #2c3e50; }
 .arrow { padding: 15px; color: #bdc3c7; text-align: center; }
 
-/* Клієнт */
 .clientName { font-weight: 600; color: #2980b9; display: block; }
 .clientPhone { font-size: 0.85em; color: #7f8c8d; }
 
-/* Деталі */
 .rowDetails { border-bottom: 1px solid #eee; background-color: #f8f9fa; }
 .detailsWrapper { padding: 20px 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; animation: fadeIn 0.3s; }
 
@@ -38,7 +35,6 @@
 .btnAction { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; background: #2c3e50; }
 .btnAction:hover { background: #1a252f; }
 
-/* Статуси */
 .badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8em; font-weight: bold; display: inline-block; text-align: center; min-width: 80px; }
 .status_new { background-color: #e3f2fd; color: #1976d2; }
 .status_modeling { background-color: #fff3e0; color: #e67e22; }

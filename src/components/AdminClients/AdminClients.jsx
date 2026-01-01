@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchClients, addClient, updateClient, deleteClient } from '../../redux/clients/operations';
 import { selectClientsList, selectClientsLoading } from '../../redux/clients/selectors';
 import ClientModal from './ClientModal';
-import css from './AdminClients.module.css'; // Ті самі стилі
+import css from './AdminClients.module.css'; 
 
 const AdminClients = () => {
     const dispatch = useDispatch();

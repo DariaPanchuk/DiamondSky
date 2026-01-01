@@ -1,16 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../../config/supabaseClient';
 
-/*
- * РЕЄСТРАЦІЯ (Тільки для Клієнтів)
- */
 export const register = createAsyncThunk(
     'auth/register',
     async ({ email, password, full_name, phone }, { rejectWithValue }) => {
         try {
-        // 1. Реєструємо в Supabase Auth
-        // Передаємо meta_data, щоб наш SQL-тригер (який ми створили раніше)
-        // автоматично записав юзера в таблицю 'clients'
         const { data, error } = await supabase.auth.signUp({
             email,
             password,
@@ -31,14 +25,10 @@ export const register = createAsyncThunk(
     }
 );
 
-/*
- * ВХІД (Login) + Визначення ролі
- */
 export const logIn = createAsyncThunk(
     'auth/login',
     async ({ email, password }, { rejectWithValue }) => {
         try {
-        // 1. Логінимось
         const { data, error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -47,22 +37,18 @@ export const logIn = createAsyncThunk(
         if (error) return rejectWithValue(error.message);
 
         const user = data.user;
-        let role = 'client'; // За замовчуванням вважаємо, що це клієнт
+        let role = 'client'; 
 
-        // 2. Перевіряємо, чи є цей юзер у таблиці співробітників
-        // .maybeSingle() повертає null (а не помилку), якщо запису немає
         const { data: employee } = await supabase
             .from('employees')
             .select('role')
             .eq('id', user.id)
             .maybeSingle();
 
-        // 3. Якщо знайшли в співробітниках - беремо його роль
         if (employee) {
-            role = employee.role; // 'admin', 'manager', 'jeweler' тощо
+            role = employee.role; 
         }
 
-        // Повертаємо об'єкт, який піде в Redux State
         return { user, session: data.session, role };
         } catch (error) {
         return rejectWithValue(error.message);
@@ -70,9 +56,6 @@ export const logIn = createAsyncThunk(
     }
 );
 
-/*
- * ВИХІД (Logout)
- */
 export const logOut = createAsyncThunk(
     'auth/logout',
     async (_, { rejectWithValue }) => {
@@ -85,15 +68,10 @@ export const logOut = createAsyncThunk(
     }
 );
 
-/*
- * ПЕРЕВІРКА СЕСІЇ (Refresh User)
- * Викликається, коли користувач оновлює сторінку (F5), щоб не злітала авторизація
- */
 export const refreshUser = createAsyncThunk(
     'auth/refresh',
     async (_, { rejectWithValue }) => {
         try {
-        // 1. Отримуємо поточну сесію з локального сховища
         const { data: { session }, error } = await supabase.auth.getSession();
 
         if (error || !session) {
@@ -103,7 +81,6 @@ export const refreshUser = createAsyncThunk(
         const user = session.user;
         let role = 'client';
 
-        // 2. Знову мусимо перевірити роль, бо Redux очистився при оновленні сторінки
         const { data: employee } = await supabase
             .from('employees')
             .select('role')
@@ -121,17 +98,12 @@ export const refreshUser = createAsyncThunk(
     }
 );
 
-/*
- * ОНОВЛЕННЯ ПРОФІЛЮ КЛІЄНТА
- */
 export const updateUserProfile = createAsyncThunk(
     'auth/updateProfile',
     async ({ full_name, phone }, { rejectWithValue, getState }) => {
         try {
             const state = getState();
             const userId = state.auth.user.id;
-
-            // 1. Оновлюємо дані в таблиці 'clients'
             const { data, error } = await supabase
                 .from('clients')
                 .update({ full_name, phone })
@@ -141,7 +113,6 @@ export const updateUserProfile = createAsyncThunk(
 
             if (error) throw error;
 
-            // Повертаємо нові дані, щоб оновити Redux
             return data; 
         } catch (error) {
             return rejectWithValue(error.message);

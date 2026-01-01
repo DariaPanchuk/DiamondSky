@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import css from './Warehouse.module.css';
-
-// Імпорти Redux (Перевір шляхи до файлів!)
 import { 
     fetchWarehouseData, 
     operateMetal, 
@@ -21,50 +19,35 @@ import {
 const Warehouse = () => {
     const dispatch = useDispatch();
     const employeeId = useSelector(state => state.auth.user.id);
-    
-    // UI State
     const [activeTab, setActiveTab] = useState('metals');
-    
-    // Дані з Redux
     const metalsInventory = useSelector(selectWarehouseMetals);
     const diamondsInventory = useSelector(selectWarehouseDiamonds);
     const simpleStonesInventory = useSelector(selectWarehouseSimpleStones);
     const dicts = useSelector(selectWarehouseDicts);
     const loading = useSelector(selectWarehouseLoading);
-
-    // === ФОРМИ ===
-    // metal_id і stone_id залишаємо пустими, вони обчисляться автоматично
     const [metalOp, setMetalOp] = useState({
         metal_id: '', amount: '', operation_type: 'supply', description: ''
     });
-
     const [newDiamond, setNewDiamond] = useState({
         shape_id: 'round', weight: 0.5, color_id: 'H', clarity_id: 'SI1',
         cut: 'Excellent', certificate_number: '', purchase_price_usd: 0
     });
-
     const [simpleOp, setSimpleOp] = useState({
         stone_id: '', quantity: '', operation_type: 'supply', description: ''
     });
 
-    // Завантаження даних (Тільки один useEffect!)
     useEffect(() => {
         dispatch(fetchWarehouseData());
     }, [dispatch]);
 
-
-    // --- ОБРОБНИКИ (HANDLERS) ---
-
     const handleMetalOperation = (e) => {
         e.preventDefault();
         
-        // 1. Визначаємо реальний ID (або те, що вибрав юзер, або перший зі списку)
         const actualMetalId = metalOp.metal_id || dicts.metals?.[0]?.id;
 
         if (!actualMetalId) return alert("Список металів порожній або не завантажився!");
         if (!metalOp.amount || parseFloat(metalOp.amount) <= 0) return alert("Некоректна вага");
 
-        // 2. Відправляємо в Redux з правильним ID
         dispatch(operateMetal({
             metalOp: { ...metalOp, metal_id: actualMetalId },
             employeeId,
@@ -80,8 +63,7 @@ const Warehouse = () => {
 
     const handleSimpleStoneOperation = (e) => {
         e.preventDefault();
-        
-        // 1. Визначаємо реальний ID
+
         const actualStoneId = simpleOp.stone_id || simpleStonesInventory?.[0]?.id;
 
         if (!actualStoneId) return alert("Немає каменів на складі!");
@@ -102,8 +84,7 @@ const Warehouse = () => {
 
     const handleAddDiamond = (e) => {
         e.preventDefault();
-        
-        // Перестраховка для селектів діамантів
+
         const actualShape = newDiamond.shape_id || dicts.shapes?.[0]?.id || 'round';
         const actualColor = newDiamond.color_id || dicts.colors?.[0]?.id || 'H';
         const actualClarity = newDiamond.clarity_id || dicts.clarities?.[0]?.id || 'SI1';
@@ -127,9 +108,6 @@ const Warehouse = () => {
             .catch(err => alert(err));
     };
 
-
-    // --- RENDER ---
-
     if (loading && metalsInventory.length === 0) return <div className={css.loading}>Завантаження складу...</div>;
 
     return (
@@ -140,7 +118,6 @@ const Warehouse = () => {
                 <button onClick={() => setActiveTab('simple')} className={`${css.tab} ${activeTab === 'simple' ? css.activeTab : ''}`}>Інші камені</button>
             </div>
 
-            {/* === 1. МЕТАЛИ === */}
             {activeTab === 'metals' && (
                 <div className={css.gridContainer}>
                     <div>
@@ -162,8 +139,6 @@ const Warehouse = () => {
                     <div className={css.card}>
                         <h4 className={css.title}>Операція з металом</h4>
                         <form onSubmit={handleMetalOperation} className={css.form}>
-                            
-                            {/* Оновлений Select: Бере Value або перший елемент списку */}
                             <select
                                 value={metalOp.metal_id || (dicts.metals?.[0]?.id || '')}
                                 onChange={e => setMetalOp({ ...metalOp, metal_id: e.target.value })}
@@ -186,7 +161,6 @@ const Warehouse = () => {
                 </div>
             )}
 
-            {/* === 2. ПРОСТІ КАМЕНІ === */}
             {activeTab === 'simple' && (
                 <div className={css.gridContainer}>
                     <div>
@@ -215,8 +189,6 @@ const Warehouse = () => {
                     <div className={css.card}>
                         <h4 className={css.title}>Операція з каменями</h4>
                         <form onSubmit={handleSimpleStoneOperation} className={css.form}>
-                            
-                            {/* Оновлений Select: Бере Value або перший елемент списку */}
                             <select
                                 value={simpleOp.stone_id || (simpleStonesInventory?.[0]?.id || '')}
                                 onChange={e => setSimpleOp({ ...simpleOp, stone_id: e.target.value })}
@@ -241,7 +213,6 @@ const Warehouse = () => {
                 </div>
             )}
 
-            {/* === 3. ДІАМАНТИ === */}
             {activeTab === 'diamonds' && (
                 <div>
                     <div className={css.card} style={{ marginBottom: '20px' }}>

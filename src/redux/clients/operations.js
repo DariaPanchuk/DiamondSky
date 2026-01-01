@@ -7,7 +7,6 @@ const parseNumberSafe = (value, isFloat = false) => {
     return isNaN(num) ? 0 : num;
 };
 
-// Отримання всіх клієнтів
 export const fetchClients = createAsyncThunk(
     'clients/fetchAll',
     async (_, { rejectWithValue }) => {
@@ -26,7 +25,6 @@ export const fetchClients = createAsyncThunk(
     }
 );
 
-// Додавання нового клієнта
 export const addClient = createAsyncThunk(
     'clients/add',
     async (formData, { rejectWithValue, dispatch }) => {
@@ -54,7 +52,6 @@ export const addClient = createAsyncThunk(
     }
 );
 
-// Оновлення клієнта
 export const updateClient = createAsyncThunk(
     'clients/update',
     async ({ id, updates }, { rejectWithValue, dispatch }) => {
@@ -90,7 +87,6 @@ export const updateClient = createAsyncThunk(
     }
 );
 
-// Видалення клієнта
 export const deleteClient = createAsyncThunk(
     'clients/delete',
     async (id, { rejectWithValue, dispatch }) => {
@@ -102,7 +98,6 @@ export const deleteClient = createAsyncThunk(
 
             if (error) throw error;
 
-            // Після видалення оновлюємо список
             dispatch(fetchClients());
         } catch (error) {
             console.error("Delete Client Error:", error);

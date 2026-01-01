@@ -89,7 +89,6 @@ const CreateOrderForm = ({ onSuccess }) => {
         });
     };
 
-    // 👇 ГОЛОВНЕ ВИПРАВЛЕННЯ: Фільтруємо камені по Type ID
     const availableSimpleStones = dicts.simpleStones.filter(
         s => s.type_id === selection.insert_type_id && s.stock_quantity > 0
     );
@@ -139,8 +138,6 @@ const CreateOrderForm = ({ onSuccess }) => {
             <h3 className={css.title}>Створити прикрасу</h3>
             
             <form onSubmit={handleSubmit} className={css.form}>
-                
-                {/* 1. БАЗА */}
                 <div className={css.section}>
                     <h4 className={css.section_title}>Основа</h4>
                     <div className={css.grid2}>
@@ -150,7 +147,7 @@ const CreateOrderForm = ({ onSuccess }) => {
                                 <option value="">-- Оберіть --</option>
                                 {CATEGORY_GROUPS.map(g => (
                                     <optgroup key={g.id} label={g.label}>
-                                        {dicts.types.filter(t => t.category === g.id).map(t => 
+                                        {dicts.types.filter(t => t.category === g.id).map(t =>
                                             <option key={t.id} value={t.id}>{t.label}</option>
                                         )}
                                     </optgroup>
@@ -170,18 +167,13 @@ const CreateOrderForm = ({ onSuccess }) => {
                         </label>
                     </div>
                 </div>
-
-                {/* 2. ВСТАВКА */}
                 <div className={css.section}>
                     <h4 className={css.section_title}>Вставка</h4>
-                    
-                    {/* Вибір ТИПУ вставки (Діамант, Топаз, Фіаніт і т.д.) */}
                     <select name="insert_type_id" value={selection.insert_type_id} onChange={handleChange} className={css.input}>
                         <option value="">-- Оберіть тип вставки --</option>
                         {dicts.insertTypes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                     </select>
 
-                    {/* ВАРІАНТ А: ДІАМАНТ (Конструктор) */}
                     {selection.insert_type_id === 'diamond' && (
                         <div className={css.cop__diamondBox}>
                             <div className={css.grid2}>
@@ -205,22 +197,19 @@ const CreateOrderForm = ({ onSuccess }) => {
                         </div>
                     )}
 
-                    {/* ВАРІАНТ Б: ІНШІ КАМЕНІ (Список з фільтром) */}
                     {selection.insert_type_id && selection.insert_type_id !== 'diamond' && (
-                        <div style={{marginTop: '10px'}}>
+                        <div style={{ marginTop: '10px' }}>
                             <label><p className={css.label}>Оберіть конкретний камінь:</p></label>
-                            <select 
-                                name="catalog_stone_id" 
-                                value={selection.catalog_stone_id} 
-                                onChange={handleChange} 
-                                required 
+                            <select
+                                name="catalog_stone_id"
+                                value={selection.catalog_stone_id}
+                                onChange={handleChange}
+                                required
                                 className={`${css.input} ${css.inputTall}`}
                             >
                                 <option value="">-- Оберіть варіант --</option>
-                                
-                                {/* 👇 ПОВЕРНУТО ГРУПУВАННЯ ТА ФІЛЬТРАЦІЮ */}
+
                                 {(() => {
-                                    // 1. Беремо унікальні назви з ВЖЕ ВІДФІЛЬТРОВАНОГО списку
                                     const uniqueNames = [...new Set(availableSimpleStones.map(s => s.name))];
                                     
                                     if (uniqueNames.length === 0) {
@@ -233,28 +222,27 @@ const CreateOrderForm = ({ onSuccess }) => {
                                             <optgroup key={groupName} label={groupName}>
                                                 {stonesInGroup.map(s => (
                                                     <option key={s.id} value={s.id}>
-                                                        {s.color !== 'Clear' && s.color !== 'White' ? `${s.color}, ` : ''} 
+                                                        {s.color !== 'Clear' && s.color !== 'White' ? `${s.color}, ` : ''}
                                                         {s.shape} {s.size_description} — {s.price_uah} грн
                                                     </option>
                                                 ))}
                                             </optgroup>
                                         );
                                     });
-                                })()} 
+                                })()}
                             </select>
                         </div>
                     )}
                 </div>
 
-                {/* 3. ПОСЛУГИ */}
                 <div className={css.section}>
                     <h4 className={css.section_title}>Послуги</h4>
                     <div className={css.servicesGrid}>
                         {dicts.additionalServices.map(srv => (
                             <label key={srv.id} className={css.serviceItem}>
-                                <input 
-                                    type="checkbox" 
-                                    value={srv.id} 
+                                <input
+                                    type="checkbox"
+                                    value={srv.id}
                                     checked={selection.selected_services.includes(srv.id)}
                                     onChange={handleServiceChange}
                                     className={css.checkbox}
@@ -265,7 +253,6 @@ const CreateOrderForm = ({ onSuccess }) => {
                     </div>
                 </div>
 
-                {/* 4. ІНФО */}
                 <div className={css.section}>
                     <label><p className={css.section_title}>Коментар:</p></label>
                     <textarea name="comment" value={selection.comment} onChange={handleChange} className={css.textarea} />

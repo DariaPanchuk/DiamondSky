@@ -1,28 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-
-// Імпорти Redux
 import { logIn } from '../../redux/auth/operations';
 import { selectAuthError, selectIsLoggedIn, selectUserRole } from '../../redux/auth/selectors';
-
-// Імпорт стилів
 import css from './LoginForm.module.css';
 
 const LoginForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
-    // Локальний стейт
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-    // Дані з Redux
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const role = useSelector(selectUserRole);
     const error = useSelector(selectAuthError);
 
-    // Логіка перенаправлення після успішного входу
     useEffect(() => {
         if (isLoggedIn && role) {
             if (role === 'client') {

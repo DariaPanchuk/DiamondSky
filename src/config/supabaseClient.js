@@ -1,10 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-// 1. Зчитуємо змінні з файлу .env (Vite використовує import.meta.env)
+// 1. Зчитуємо змінні з файлу .env
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Перевірка на випадок, якщо ви забули створити .env файл
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Supabase URL or Anon Key is missing in .env file');
 }

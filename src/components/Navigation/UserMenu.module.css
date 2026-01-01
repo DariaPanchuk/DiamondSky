@@ -48,5 +48,5 @@
 
 .btnLogout:hover {
     border-color: #e74c3c;
-    color: #e74c3c; /* Червоний колір при наведенні (вихід) */
+    color: #e74c3c; 
 }

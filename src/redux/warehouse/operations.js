@@ -1,12 +1,10 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { supabase } from '../../config/supabaseClient';
 
-// --- ОТРИМАННЯ ВСІХ ДАНИХ СКЛАДУ ---
 export const fetchWarehouseData = createAsyncThunk(
     'warehouse/fetchAll',
     async (_, thunkAPI) => {
         try {
-        // 1. Метали: Dictionary + Stock merge
         const { data: allMetalsDict } = await supabase.from('dict_metals').select('*').order('label');
         const { data: warehouseStock } = await supabase.from('warehouse_metals').select('*');
 
@@ -19,7 +17,6 @@ export const fetchWarehouseData = createAsyncThunk(
             };
         });
 
-        // 2. Інші запити паралельно
         const [diamondsRes, simpleRes, shapesRes, colorsRes, claritiesRes] = await Promise.all([
             supabase.from('warehouse_diamonds').select('*').eq('status', 'available').order('created_at', { ascending: false }),
             supabase.from('catalog_simple_stones').select('*').order('stock_quantity', { ascending: false }),
@@ -45,7 +42,6 @@ export const fetchWarehouseData = createAsyncThunk(
     }
 );
 
-// --- ОПЕРАЦІЯ З МЕТАЛОМ ---
 export const operateMetal = createAsyncThunk(
     'warehouse/operateMetal',
     async ({ metalOp, employeeId, currentInventory }, thunkAPI) => {
@@ -64,14 +60,12 @@ export const operateMetal = createAsyncThunk(
                 description: metalOp.description
             }]);
 
-            // 2. Рахуємо новий баланс
             const currentMetal = currentInventory.find(m => m.metal_id === metalOp.metal_id);
             const currentBalance = currentMetal ? currentMetal.balance_g : 0;
             const newBalance = currentBalance + change;
 
             if (newBalance < 0) return thunkAPI.rejectWithValue("Недостатньо металу на складі!");
 
-            // 3. Оновлюємо базу
             const { data, error } = await supabase.from('warehouse_metals')
                 .upsert({ 
                     metal_id: metalOp.metal_id, 
@@ -81,8 +75,7 @@ export const operateMetal = createAsyncThunk(
                 .select();
 
             if (error) throw error;
-            
-            // Повертаємо оновлений запис, щоб оновити Redux без повного перезавантаження
+
             return {
                 metal_id: data[0].metal_id, 
                 newBalance: data[0].balance_g
@@ -93,7 +86,6 @@ export const operateMetal = createAsyncThunk(
     }
 );
 
-// --- ОПЕРАЦІЯ З КАМЕНЯМИ ---
 export const operateSimpleStone = createAsyncThunk(
     'warehouse/operateSimpleStone',
     async ({ simpleOp, employeeId, currentInventory }, thunkAPI) => {
@@ -131,7 +123,6 @@ export const operateSimpleStone = createAsyncThunk(
     }
 );
 
-// --- ДІАМАНТИ (CRUD) ---
 export const addDiamond = createAsyncThunk(
     'warehouse/addDiamond',
     async (diamondData, thunkAPI) => {
@@ -141,7 +132,7 @@ export const addDiamond = createAsyncThunk(
                 .insert([{...diamondData, status: 'available'}])
                 .select();
             if (error) throw error;
-            return data[0]; // Повертаємо створений діамант
+            return data[0]; 
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }
@@ -154,7 +145,7 @@ export const deleteDiamond = createAsyncThunk(
         try {
             const { error } = await supabase.from('warehouse_diamonds').delete().eq('id', id);
             if (error) throw error;
-            return id; // Повертаємо ID для видалення зі стейту
+            return id; 
         } catch (error) {
             return thunkAPI.rejectWithValue(error.message);
         }

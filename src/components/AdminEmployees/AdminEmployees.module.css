@@ -1,4 +1,3 @@
-/* --- ОСНОВНИЙ КОНТЕЙНЕР --- */
 .container {
     max-width: 1200px;
     padding: 20px;
@@ -15,7 +14,6 @@
     font-size: 1.2rem;
 }
 
-/* --- ШАПКА --- */
 .header {
     display: flex;
     justify-content: right;
@@ -54,7 +52,6 @@
     transform: translateY(0);
 }
 
-/* --- ТАБЛИЦЯ --- */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -79,7 +76,6 @@
     color: #34495e;
 }
 
-/* --- БЕЙДЖІ РОЛЕЙ --- */
 .roleBadge {
     padding: 5px 10px;
     border-radius: 20px;
@@ -90,39 +86,36 @@
     min-width: 80px;
 }
 
-/* Кольори для різних професій */
 .role_admin {
-    background-color: #e74c3c; /* Червоний */
+    background-color: #e74c3c; 
     color: white;
 }
 
 .role_manager {
-    background-color: #3498db; /* Синій */
+    background-color: #3498db; 
     color: white;
 }
 
 .role_jeweler {
-    background-color: #f1c40f; /* Жовтий */
-    color: #2c3e50; /* Темний текст для контрасту */
+    background-color: #f1c40f; 
+    color: #2c3e50; 
 }
 
 .role_setter {
-    background-color: #9b59b6; /* Фіолетовий */
+    background-color: #9b59b6; 
     color: white;
 }
 
 .role_3d_designer {
-    background-color: #1abc9c; /* Бірюзовий */
+    background-color: #1abc9c; 
     color: white;
 }
 
-/* Дефолтний колір, якщо роль невідома */
 .roleBadge:not([class*="role_"]) {
     background-color: #95a5a6;
     color: white;
 }
 
-/* --- СТАТУСИ --- */
 .statusActive {
     color: #27ae60;
     font-weight: 600;
@@ -155,7 +148,6 @@
     border-radius: 50%;
 }
 
-/* --- КНОПКИ ДІЙ В ТАБЛИЦІ --- */
 .actionBtn {
     background-color: white;
     border: 1px solid #dcdcdc;
@@ -177,16 +169,14 @@
     transform: scale(1.05);
 }
 
-
-/* --- МОДАЛЬНЕ ВІКНО --- */
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Затемнення фону */
-    backdrop-filter: blur(2px); /* Ефект розмиття */
+    background-color: rgba(0, 0, 0, 0.5); 
+    backdrop-filter: blur(2px); 
     display: flex;
     justify-content: center;
     align-items: center;
@@ -236,7 +226,7 @@
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
-    box-sizing: border-box; /* Важливо, щоб padding не ламав ширину */
+    box-sizing: border-box; 
     transition: border-color 0.2s;
 }
 
@@ -246,7 +236,6 @@
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-/* Чекбокс */
 .checkboxWrapper {
     display: flex;
     align-items: center;
@@ -257,7 +246,6 @@
     border-radius: 6px;
 }
 
-/* --- КНОПКИ МОДАЛКИ --- */
 .modalActions {
     display: flex;
     justify-content: flex-end;

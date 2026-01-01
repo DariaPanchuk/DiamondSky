@@ -2,27 +2,18 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { supabase } from '../config/supabaseClient';
 import { updateUserProfile } from '../redux/auth/operations';
-
-// Імпортуємо підкомпоненти (ми їх створимо нижче)
 import ClientOrders from '../components/ClientOrders/ClientOrders';
 import CreateOrderForm from '../components/CreateOrderForm/CreateOrderForm';
 
 const ClientDashboard = () => {
     const dispatch = useDispatch();
     const user = useSelector(state => state.auth.user);
-    
-    // Стан інтерфейсу
     const [activeTab, setActiveTab] = useState('orders'); // 'orders' або 'create'
     const [isEditing, setIsEditing] = useState(false);
     const [loadingProfile, setLoadingProfile] = useState(true);
-
-    // Стан даних профілю
     const [profile, setProfile] = useState({ full_name: '', phone: '', email: '' });
-    
-    // Стан форми редагування (з паролем)
     const [editForm, setEditForm] = useState({ full_name: '', phone: '', password: '' });
 
-    // 1. Завантаження профілю
     useEffect(() => {
         const fetchProfile = async () => {
             if (!user?.id) return;
@@ -46,7 +37,6 @@ const ClientDashboard = () => {
         fetchProfile();
     }, [user]);
 
-    // 2. Збереження з перевіркою пароля
     const handleSaveProfile = async (e) => {
         e.preventDefault();
         
@@ -56,9 +46,8 @@ const ClientDashboard = () => {
         }
 
         try {
-            // А. Перевіряємо пароль через спробу входу
             const { error: authError } = await supabase.auth.signInWithPassword({
-                email: user.email, // Email беремо з Redux/State, він не змінюється тут
+                email: user.email,
                 password: editForm.password
             });
 
@@ -67,7 +56,6 @@ const ClientDashboard = () => {
                 return;
             }
 
-            // Б. Якщо пароль ок -> оновлюємо дані
             const result = await dispatch(updateUserProfile({
                 full_name: editForm.full_name,
                 phone: editForm.phone
@@ -76,7 +64,7 @@ const ClientDashboard = () => {
             if (updateUserProfile.fulfilled.match(result)) {
                 setProfile(prev => ({ ...prev, full_name: editForm.full_name, phone: editForm.phone }));
                 setIsEditing(false);
-                setEditForm(prev => ({ ...prev, password: '' })); // Очищаємо пароль
+                setEditForm(prev => ({ ...prev, password: '' }));
                 alert("Дані успішно оновлено! ✅");
             }
         } catch (error) {
@@ -89,16 +77,12 @@ const ClientDashboard = () => {
         setEditForm({ ...editForm, full_name: profile.full_name, phone: profile.phone, password: '' });
     };
 
-    if (loadingProfile) return <div style={{padding:'20px'}}>Завантаження профілю...</div>;
+    if (loadingProfile) return <div style={{ padding: '20px' }}>Завантаження профілю...</div>;
 
     return (
         <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '30px 20px' }}>
-            
-            {/* === БЛОК ПРОФІЛЮ === */}
             <div style={cardStyle}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
-                    
-                    {/* Інформація */}
                     {!isEditing ? (
                         <div style={{ width: '100%' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
@@ -124,25 +108,24 @@ const ClientDashboard = () => {
                             </div>
                         </div>
                     ) : (
-                        // Форма редагування
                         <form onSubmit={handleSaveProfile} style={{ width: '100%' }}>
                             <h3 style={{ marginTop: 0 }}>Редагування даних</h3>
                             <div style={{ display: 'grid', gap: '15px', maxWidth: '400px' }}>
                                 <label>
                                     Ім'я:
-                                    <input 
-                                        type="text" 
-                                        value={editForm.full_name} 
-                                        onChange={e => setEditForm({...editForm, full_name: e.target.value})}
+                                    <input
+                                        type="text"
+                                        value={editForm.full_name}
+                                        onChange={e => setEditForm({ ...editForm, full_name: e.target.value })}
                                         style={inputStyle}
                                     />
                                 </label>
                                 <label>
                                     Телефон:
-                                    <input 
-                                        type="text" 
-                                        value={editForm.phone} 
-                                        onChange={e => setEditForm({...editForm, phone: e.target.value})}
+                                    <input
+                                        type="text"
+                                        value={editForm.phone}
+                                        onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
                                         style={inputStyle}
                                     />
                                 </label>
@@ -150,11 +133,11 @@ const ClientDashboard = () => {
                                 <div style={{ background: '#fff3cd', padding: '10px', borderRadius: '5px', border: '1px solid #ffeeba' }}>
                                     <label style={{ fontWeight: 'bold', fontSize: '0.9em' }}>
                                         🔒 Підтвердіть паролем для збереження:
-                                        <input 
-                                            type="password" 
-                                            value={editForm.password} 
-                                            onChange={e => setEditForm({...editForm, password: e.target.value})}
-                                            style={{...inputStyle, marginTop: '5px'}}
+                                        <input
+                                            type="password"
+                                            value={editForm.password}
+                                            onChange={e => setEditForm({ ...editForm, password: e.target.value })}
+                                            style={{ ...inputStyle, marginTop: '5px' }}
                                             placeholder="Ваш пароль"
                                             required
                                         />
@@ -170,36 +153,30 @@ const ClientDashboard = () => {
                     )}
                 </div>
             </div>
-
-            {/* === НАВІГАЦІЯ ВКЛАДОК === */}
             <div style={{ display: 'flex', gap: '15px', margin: '30px 0 20px 0' }}>
-                <button 
+                <button
                     onClick={() => setActiveTab('orders')}
                     style={activeTab === 'orders' ? activeTabStyle : tabStyle}
                 >
                     Мої замовлення
                 </button>
-                <button 
+                <button
                     onClick={() => setActiveTab('create')}
                     style={activeTab === 'create' ? activeTabStyle : tabStyle}
                 >
                     Замовити
                 </button>
             </div>
-
-            {/* === КОНТЕНТ (Conditional Rendering) === */}
             <div style={{ minHeight: '400px' }}>
                 {activeTab === 'orders' && <ClientOrders />}
                 {activeTab === 'create' && (
                     <CreateOrderForm onSuccess={() => setActiveTab('orders')} />
                 )}
             </div>
-
         </div>
     );
 };
 
-// --- СТИЛІ ---
 const cardStyle = { background: 'white', padding: '25px', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', border: '1px solid #eee' };
 const infoGrid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginTop: '15px' };
 const labelStyle = { color: '#7f8c8d', fontSize: '0.85em', display: 'block', marginBottom: '4px' };

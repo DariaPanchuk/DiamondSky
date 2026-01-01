@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import css from './AdminEmployees.module.css'; // Використовуємо ті ж стилі
+import css from './AdminEmployees.module.css'; 
 
 const ROLES = [
     { value: 'jeweler', label: 'Ювелір' },
@@ -41,13 +41,9 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        // Копіюємо дані
+
         const dataToSend = { ...formData };
 
-        // Логіка пароля:
-        // Якщо це редагування і поле пароля пусте — видаляємо його з об'єкта,
-        // щоб не перезаписати існуючий пароль на пустий рядок.
         if (employeeToEdit && !dataToSend.password_hash) {
             delete dataToSend.password_hash;
         }
@@ -55,12 +51,10 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
         onSave(dataToSend);
     };
 
-    // Якщо модалка закрита - нічого не малюємо
     if (!isOpen) return null;
 
     return (
         <div className={css.overlay} onClick={onClose}>
-            {/* stopPropagation, щоб клік по формі не закривав модалку */}
             <div className={css.modal} onClick={(e) => e.stopPropagation()}>
                 <h3 className={css.modalTitle}>
                     {employeeToEdit ? 'Редагувати співробітника' : 'Новий співробітник'}
@@ -79,7 +73,6 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                         />
                     </div>
 
-                    {/* Телефон */}
                     <div className={css.formGroup}>
                         <label className={css.label}>Телефон:</label>
                         <input 
@@ -91,7 +84,6 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                         />
                     </div>
 
-                    {/* Email / Логін */}
                     <div className={css.formGroup}>
                         <label className={css.label}>Email (Логін):</label>
                         <input 
@@ -101,8 +93,7 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                             onChange={handleChange} 
                         />
                     </div>
-                    
-                    {/* Роль */}
+
                     <div className={css.formGroup}>
                         <label className={css.label}>Роль:</label>
                         <select name="role" className={css.select} value={formData.role} onChange={handleChange}>
@@ -110,7 +101,6 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                         </select>
                     </div>
 
-                    {/* Пароль */}
                     <div className={css.formGroup}>
                         <label className={css.label}>
                             {employeeToEdit ? 'Новий пароль (не обов\'язково):' : 'Пароль:'}
@@ -121,12 +111,11 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                             className={css.input} 
                             value={formData.password_hash} 
                             onChange={handleChange}
-                            required={!employeeToEdit} // Обов'язковий тільки при створенні нового
+                            required={!employeeToEdit} 
                             placeholder={employeeToEdit ? "Залиште пустим, щоб не міняти" : ""}
                         />
                     </div>
 
-                    {/* Активність */}
                     <div className={css.formGroup} style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
                         <input 
                             type="checkbox" 
@@ -141,7 +130,6 @@ const EmployeeModal = ({ isOpen, onClose, onSave, employeeToEdit }) => {
                         </label>
                     </div>
 
-                    {/* Кнопки */}
                     <div className={css.modalActions}>
                         <button type="button" className={css.btnCancel} onClick={onClose}>
                             Скасувати

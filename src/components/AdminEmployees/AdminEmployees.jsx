@@ -5,7 +5,6 @@ import { selectEmployeesList, selectEmployeesLoading } from '../../redux/employe
 import EmployeeModal from './EmployeeModal';
 import css from './AdminEmployees.module.css';
 
-// Словник для гарного відображення ролей
 const ROLE_LABELS = {
     jeweler: 'Ювелір',
     setter: 'Закріплювач',
@@ -18,42 +17,33 @@ const AdminEmployees = () => {
     const dispatch = useDispatch();
     const employees = useSelector(selectEmployeesList);
     const isLoading = useSelector(selectEmployeesLoading);
-    
-    // Стан для модального вікна
     const [isModalOpen, setIsModalOpen] = useState(false);
-    // Стан для редагування (якщо null - це створення, якщо об'єкт - редагування)
     const [editingEmployee, setEditingEmployee] = useState(null);
 
-    // Завантажуємо список при відкритті сторінки
     useEffect(() => {
         dispatch(fetchEmployees());
     }, [dispatch]);
 
-    // --- ОБРОБНИКИ ПОДІЙ ---
-
     const handleAddClick = () => {
-        setEditingEmployee(null); // Очищаємо, бо це новий запис
+        setEditingEmployee(null); 
         setIsModalOpen(true);
     };
 
     const handleEditClick = (employee) => {
-        setEditingEmployee(employee); // Записуємо, кого редагуємо
+        setEditingEmployee(employee); 
         setIsModalOpen(true);
     };
 
     const handleSave = async (formData) => {
         try {
             if (editingEmployee) {
-                // ОНОВЛЕННЯ
                 await dispatch(updateEmployee({ 
                     id: editingEmployee.id, 
                     updates: formData 
                 })).unwrap();
             } else {
-                // СТВОРЕННЯ
                 await dispatch(addEmployee(formData)).unwrap();
             }
-            // Закриваємо модалку тільки якщо немає помилок
             setIsModalOpen(false);
         } catch (error) {
             alert(`Помилка: ${error}`);
@@ -70,22 +60,18 @@ const AdminEmployees = () => {
         }
     };
 
-    // --- РЕНДЕР ---
-
     if (isLoading && employees.length === 0) {
         return <div className={css.loading}>Завантаження списку...</div>;
     }
 
     return (
         <div className={css.container}>
-            {/* ШАПКА */}
             <div className={css.header}>
                 <button className={css.addBtn} onClick={handleAddClick}>
                     + Додати працівника
                 </button>
             </div>
 
-            {/* ТАБЛИЦЯ */}
             {employees.length === 0 ? (
                 <div style={{padding: '20px', textAlign: 'center', color: '#777'}}>
                     Список співробітників порожній. Додайте першого!
@@ -145,7 +131,6 @@ const AdminEmployees = () => {
                 </table>
             )}
 
-            {/* МОДАЛЬНЕ ВІКНО */}
             <EmployeeModal 
                 key={editingEmployee ? editingEmployee.id : 'new'}
                 isOpen={isModalOpen} 

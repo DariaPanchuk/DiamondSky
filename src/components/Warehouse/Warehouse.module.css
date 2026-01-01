@@ -10,7 +10,6 @@
     padding: 20px;
 }
 
-/* --- Таби --- */
 .tabsWrapper {
     display: flex;
     gap: 10px;
@@ -40,7 +39,6 @@
     color: white;
 }
 
-/* --- Сітка та Картки --- */
 .gridContainer {
     display: grid;
     grid-template-columns: 1.5fr 1fr;
@@ -60,7 +58,6 @@
     margin-bottom: 20px;
 }
 
-/* --- Форми --- */
 .form {
     display: flex;
     flex-direction: column;
@@ -78,7 +75,7 @@
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Важливо для коректних розмірів */
+    box-sizing: border-box; 
 }
 
 .btnPrimary {
@@ -95,7 +92,6 @@
     background: #219150;
 }
 
-/* --- Таблиці --- */
 .table {
     width: 100%;
     border-collapse: collapse;
@@ -114,7 +110,7 @@
 }
 
 .trHead th {
-    padding: 10px; /* Додано для читабельності */
+    padding: 10px; 
 }
 
 .trBody {
@@ -122,10 +118,9 @@
 }
 
 .trBody td {
-    padding: 10px; /* Додано для читабельності */
+    padding: 10px; 
 }
 
-/* --- Специфічні стилі даних --- */
 .balanceText {
     font-weight: bold;
 }
@@ -150,7 +145,6 @@
     background: #219150;
 }
 
-/* --- Додано стиль для кнопки видалення --- */
 .btnDelete {
     background: #e74c3c;
     color: white;

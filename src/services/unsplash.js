@@ -1,5 +1,3 @@
-// src/services/unsplash.js
-
 const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
 const APP_NAME = import.meta.env.VITE_UNSPLASH_APP_NAME || "MyApp";
 
@@ -42,8 +40,8 @@ export async function searchUnsplashPhotos(query, { page = 1, perPage = 9, signa
 
     return (data.results || []).map((p) => ({
         id: p.id,
-        src: p.urls?.small,        // оптимально для сітки
-        srcFull: p.urls?.full,     // якщо захочеш модалку
+        src: p.urls?.small,        
+        srcFull: p.urls?.full,     
         alt: p.alt_description || "Прикраса",
         photographerName: p.user?.name || "Unknown",
         photographerUrl: p.user?.links?.html ? withUtm(p.user.links.html) : null,

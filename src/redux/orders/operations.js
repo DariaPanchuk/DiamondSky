@@ -46,34 +46,24 @@ export const fetchOrders = createAsyncThunk(
     }
 );
 
-/*
- * СТВОРЕННЯ ЗАМОВЛЕННЯ (З урахуванням таблиці order_item_services)
- */
 export const addOrder = createAsyncThunk(
     'orders/addOrder',
     async (payload, { rejectWithValue, getState }) => {
         try {
             const userId = getState().auth.user.id;
-            
-            // =====================================================
-            // ЕТАП 1: ОТРИМАННЯ ДАНИХ ДЛЯ РОЗРАХУНКУ (ЦІНИ)
-            // =====================================================
-            
-            // 1.1. Отримуємо параметри типу виробу (ціна роботи, середня вага)
+
             const { data: typeData } = await supabase
                 .from('dict_product_types')
                 .select('base_work_price, avg_weight_g')
                 .eq('id', payload.product_type_id)
                 .single();
 
-            // 1.2. Отримуємо курс металу
             const { data: metalData } = await supabase
                 .from('prices_metals')
                 .select('price_per_gram')
                 .eq('metal_id', payload.metal_id)
                 .single();
 
-            // 1.3. Отримуємо ціни на обрані послуги (якщо є)
             let servicesDict = [];
             if (payload.selected_services && payload.selected_services.length > 0) {
                 const { data } = await supabase
@@ -83,33 +73,21 @@ export const addOrder = createAsyncThunk(
                 servicesDict = data || [];
             }
 
-            // =====================================================
-            // ЕТАП 2: МАТЕМАТИКА (РОЗРАХУНОК)
-            // =====================================================
-
-            // А. Робота та Метал
-            const baseWorkPrice = typeData?.base_work_price || 0;     // Напр. 3500 грн
-            const avgWeight = typeData?.avg_weight_g || 0;            // Напр. 3.5 г
-            const metalRate = metalData?.price_per_gram || 0;         // Напр. 3200 грн/г
+            const baseWorkPrice = typeData?.base_work_price || 0;     
+            const avgWeight = typeData?.avg_weight_g || 0;            
+            const metalRate = metalData?.price_per_gram || 0;         
             
-            const metalCost = avgWeight * metalRate;                  // Вартість металу
+            const metalCost = avgWeight * metalRate;                  
 
-            // Б. Камені
             let stoneCost = 0;
             
-            // Якщо обрано камінь з каталогу
             if (payload.catalog_stone_id) {
                 stoneCost = payload.catalog_stone_price || 0;
             } 
-            // Якщо діамант (Rapaport) - ваша стара логіка
             else if (payload.insert_type_id === 'diamond' && payload.dia_size) {
-                 // Тут можна вставити запит до prices_diamonds, як у вас було.
-                 // Для спрощення поки поставимо 0 (менеджер перерахує), 
-                 // або розкоментуйте ваш старий код запиту до Rapaport.
                     stoneCost = 0; 
             }
 
-            // В. Послуги
             let servicesCost = 0;
             const servicesToInsert = payload.selected_services.map(srvId => {
                 const dictInfo = servicesDict.find(d => d.id === srvId);
@@ -122,20 +100,13 @@ export const addOrder = createAsyncThunk(
                 };
             });
 
-            // Г. ЗАГАЛЬНА СУМА
             const estimatedTotal = baseWorkPrice + metalCost + stoneCost + servicesCost;
 
-            // =====================================================
-            // ЕТАП 3: ЗАПИС У БАЗУ (ТРАНЗАКЦІЯ)
-            // =====================================================
-
-            // 3.0. Формуємо коментар
             let finalComment = payload.comment || '';
             if (payload.techDescription && payload.insert_type_id === 'diamond') {
                 finalComment += `\n[ТЕХ. ЗАПИТ]: ${payload.techDescription}`;
             }
 
-            // 3.1. Створення ORDER (Шапка)
             const { data: newOrder, error: orderError } = await supabase
                 .from('orders')
                 .insert([{
@@ -143,8 +114,6 @@ export const addOrder = createAsyncThunk(
                     status: 'new',
                     deadline: payload.deadline || null,
                     order_comment: finalComment,
-                    
-                    // ✅ ЗАПИСУЄМО РОЗРАХОВАНУ СУМУ
                     total_price: estimatedTotal, 
                     prepayment: 0,
                     discount_amount: 0
@@ -154,7 +123,6 @@ export const addOrder = createAsyncThunk(
 
             if (orderError) throw orderError;
 
-            // 3.2. Створення ORDER_ITEM (Виріб)
             const { data: newItem, error: itemError } = await supabase
                 .from('order_items')
                 .insert([{
@@ -162,22 +130,19 @@ export const addOrder = createAsyncThunk(
                     product_type_id: payload.product_type_id,
                     metal_id: payload.metal_id,
                     size: payload.size ? parseFloat(payload.size) : null,
-                    
-                    // ✅ ЗАПИСУЄМО ДЕТАЛІЗАЦІЮ ЦІНИ
-                    weight_g: avgWeight,      // Орієнтовна вага
+                    weight_g: avgWeight,      
                     price_work: baseWorkPrice,
                     price_metal: metalCost,
-                    price_total: estimatedTotal // (або work + metal, залежно від вашої логіки items)
+                    price_total: estimatedTotal 
                 }])
                 .select()
                 .single();
 
             if (itemError) throw itemError;
 
-            // 3.3. Додавання ПОСЛУГ (з цінами)
             if (servicesToInsert.length > 0) {
                 const serviceRows = servicesToInsert.map(s => ({
-                    order_item_id: newItem.id, // Прив'язуємо до Items
+                    order_item_id: newItem.id, 
                     service_id: s.service_id,
                     price: s.price
                 }));
@@ -189,7 +154,6 @@ export const addOrder = createAsyncThunk(
                 if (srvError) throw srvError;
             }
 
-            // 3.4. Додавання КАМЕНЯ (з ціною)
             if (payload.catalog_stone_id) {
                 const { error: stoneError } = await supabase
                     .from('order_item_stones')
@@ -197,12 +161,11 @@ export const addOrder = createAsyncThunk(
                         order_item_id: newItem.id,
                         catalog_stone_id: payload.catalog_stone_id,
                         quantity: 1,
-                        price_per_stone: stoneCost // ✅ Ціна каменя
+                        price_per_stone: stoneCost 
                     }]);
 
                 if (stoneError) throw stoneError;
 
-                // Списання зі складу
                 await supabase.rpc('decrement_stock', { row_id: payload.catalog_stone_id });
             }
 
@@ -271,9 +234,9 @@ export const updateOrderStatus = createAsyncThunk(
         try {
             const { data, error } = await supabase
                 .from('orders')
-                .update({ status: status }) // Оновлюємо поле status
-                .eq('id', orderId)          // Для конкретного ID
-                .select()                   // Повертаємо оновлений запис
+                .update({ status: status }) 
+                .eq('id', orderId)          
+                .select()                   
                 .single();
 
             if (error) throw error;
@@ -283,8 +246,6 @@ export const updateOrderStatus = createAsyncThunk(
         }
     }
 );
-
-// src/redux/orders/operations.js
 
 export const fetchAllOrders = createAsyncThunk(
     'orders/fetchAllAdmin',
@@ -323,9 +284,6 @@ export const fetchAllOrders = createAsyncThunk(
     }
 );
 
-/*
- * ОНОВЛЕННЯ ЗАМОВЛЕННЯ (АДМІН)
- */
 export const updateOrderFull = createAsyncThunk(
     'orders/updateFull',
     async ({ orderId, itemId, updates }, { rejectWithValue }) => {
@@ -333,24 +291,16 @@ export const updateOrderFull = createAsyncThunk(
             const orderUpdates = {};
             const itemUpdates = {};
 
-            // --- 1. Поля таблиці 'orders' ---
             if (updates.total_price !== undefined) orderUpdates.total_price = updates.total_price;
             if (updates.deadline !== undefined) orderUpdates.deadline = updates.deadline;
             if (updates.order_comment !== undefined) orderUpdates.order_comment = updates.order_comment;
             if (updates.status !== undefined) orderUpdates.status = updates.status;
-
-            // --- 2. Поля таблиці 'order_items' ---
             if (updates.size !== undefined) itemUpdates.size = updates.size;
             if (updates.weight_g !== undefined) itemUpdates.weight_g = updates.weight_g;
-
-            // Оновлення виконавця (executor_id)
             if (updates.employee_id !== undefined) {
                 itemUpdates.executor_id = updates.employee_id === '' ? null : updates.employee_id;
             }
 
-            // --- Виконання запитів ---
-
-            // A. Оновлюємо orders
             if (Object.keys(orderUpdates).length > 0) {
                 const { error: errOrder } = await supabase
                     .from('orders')
@@ -359,7 +309,6 @@ export const updateOrderFull = createAsyncThunk(
                 if (errOrder) throw errOrder;
             }
 
-            // B. Оновлюємо order_items
             if (Object.keys(itemUpdates).length > 0 && itemId) {
                 const { error: errItem } = await supabase
                     .from('order_items')
@@ -368,8 +317,6 @@ export const updateOrderFull = createAsyncThunk(
                 if (errItem) throw errItem;
             }
 
-            // C. Отримуємо свіжі дані
-            // (Тут теж прибрав коментарі з select)
             const { data: freshOrder, error: fetchError } = await supabase
                 .from('orders')
                 .select(`
@@ -403,7 +350,6 @@ export const updateOrderFull = createAsyncThunk(
     }
 );
 
-// 1. Отримати довідник послуг (щоб наповнити випадаючий список)
 export const fetchServicesDictionary = createAsyncThunk(
     'orders/fetchServicesDict',
     async (_, { rejectWithValue }) => {
@@ -419,12 +365,10 @@ export const fetchServicesDictionary = createAsyncThunk(
     }
 );
 
-// 2. Додати послугу до виробу
 export const addServiceToItem = createAsyncThunk(
     'orders/addService',
     async ({ orderId, itemId, serviceId, price }, { rejectWithValue, dispatch }) => {
         try {
-            // 1. Додаємо запис про послугу в таблицю order_item_services
             const { error: serviceError } = await supabase
                 .from('order_item_services')
                 .insert([{ 
@@ -435,9 +379,6 @@ export const addServiceToItem = createAsyncThunk(
 
             if (serviceError) throw serviceError;
 
-            // --- ВИПРАВЛЕННЯ ЦІНИ ПОЧИНАЄТЬСЯ ТУТ ---
-
-            // 2. Отримуємо поточну ціну замовлення з бази
             const { data: currentOrder, error: fetchError } = await supabase
                 .from('orders')
                 .select('total_price')
@@ -446,12 +387,10 @@ export const addServiceToItem = createAsyncThunk(
 
             if (fetchError) throw fetchError;
 
-            // 3. Рахуємо нову суму (Стара ціна + Ціна послуги)
             const oldTotal = Number(currentOrder.total_price || 0);
             const servicePrice = Number(price || 0);
             const newTotal = oldTotal + servicePrice;
 
-            // 4. Оновлюємо замовлення з НОВОЮ сумою
             const { error: updateError } = await supabase
                 .from('orders')
                 .update({ total_price: newTotal })
@@ -459,9 +398,6 @@ export const addServiceToItem = createAsyncThunk(
 
             if (updateError) throw updateError;
 
-            // ----------------------------------------
-
-            // 5. Оновлюємо список на екрані
             dispatch(fetchAllOrders());
             return { orderId, success: true };
 
@@ -471,12 +407,10 @@ export const addServiceToItem = createAsyncThunk(
     }
 );
 
-// 3. Видалити послугу
 export const deleteServiceFromItem = createAsyncThunk(
     'orders/deleteService',
     async ({ orderId, serviceRecordId }, { rejectWithValue, dispatch }) => {
         try {
-            // 1. Спочатку дізнаємось ціну послуги, яку видаляємо (щоб відняти її)
             const { data: serviceToDelete, error: findError } = await supabase
                 .from('order_item_services')
                 .select('price')
@@ -486,7 +420,6 @@ export const deleteServiceFromItem = createAsyncThunk(
             if (findError) throw findError;
             const priceToSubtract = Number(serviceToDelete.price || 0);
 
-            // 2. Видаляємо послугу
             const { error: deleteError } = await supabase
                 .from('order_item_services')
                 .delete()
@@ -494,7 +427,6 @@ export const deleteServiceFromItem = createAsyncThunk(
 
             if (deleteError) throw deleteError;
 
-            // 3. Отримуємо поточну ціну замовлення
             const { data: currentOrder, error: fetchError } = await supabase
                 .from('orders')
                 .select('total_price')
@@ -503,12 +435,9 @@ export const deleteServiceFromItem = createAsyncThunk(
 
             if (fetchError) throw fetchError;
 
-            // 4. Віднімаємо ціну
             const currentTotal = Number(currentOrder.total_price || 0);
-            // Захист від мінусової ціни (якщо раптом щось пішло не так)
             const newTotal = Math.max(0, currentTotal - priceToSubtract);
 
-            // 5. Оновлюємо замовлення
             const { error: updateError } = await supabase
                 .from('orders')
                 .update({ total_price: newTotal })
@@ -545,7 +474,6 @@ export const fetchStoneCatalogs = createAsyncThunk(
     }
 );
 
-// 2. Додати камінь до виробу
 export const addStoneToItem = createAsyncThunk(
     'orders/addStone',
     async ({ itemId, stoneType, stoneId, quantity, price, diamondParams }, { dispatch, rejectWithValue }) => {
@@ -560,13 +488,9 @@ export const addStoneToItem = createAsyncThunk(
             };
 
             if (stoneType === 'diamond' && diamondParams) {
-                // ЛОГІКА ДЛЯ ДІАМАНТА (КОНСТРУКТОР)
-                // Ми не прив'язуємось до ID, ми просто описуємо, що треба замовити
                 insertData.description = `Діамант: ${diamondParams.shape}, ${diamondParams.size}, ${diamondParams.color}/${diamondParams.clarity}`;
             } 
             else {
-                // ЛОГІКА ДЛЯ ЗВИЧАЙНОГО КАМЕНЯ
-                // Тут ми маємо ID з каталогу
                 insertData.catalog_stone_id = stoneId;
             }
 
@@ -585,7 +509,6 @@ export const addStoneToItem = createAsyncThunk(
     }
 );
 
-// 3. Видалити камінь
 export const deleteStoneFromItem = createAsyncThunk(
     'orders/deleteStone',
     async ({ stoneRecordId }, { dispatch, rejectWithValue }) => {

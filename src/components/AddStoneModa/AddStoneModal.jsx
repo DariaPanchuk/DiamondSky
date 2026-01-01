@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../../config/supabaseClient'; // Прямий запит словників, як у формі
+import { supabase } from '../../config/supabaseClient'; 
 import css from './AddStoneModal.module.css';
 
 const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
-    
-    // Стани для словників (завантажуємо при відкритті)
     const [dicts, setDicts] = useState({
         insertTypes: [],
         simpleStones: [],
@@ -14,7 +12,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
         diaClarities: []
     });
 
-    // Стан вибору (ідентичний до CreateOrderForm)
     const [selection, setSelection] = useState({
         insert_type_id: '',
         catalog_stone_id: '',
@@ -27,7 +24,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
 
     const [loading, setLoading] = useState(true);
 
-    // Завантаження словників (один раз при монтуванні)
     useEffect(() => {
         if (!isOpen) return;
 
@@ -64,7 +60,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
         const { name, value } = e.target;
         setSelection(prev => ({ ...prev, [name]: value }));
 
-        // Скидаємо залежні поля при зміні типу
         if (name === 'insert_type_id') {
             setSelection(prev => ({
                 ...prev,
@@ -76,16 +71,13 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
     };
 
     const handleAddClick = () => {
-        // Валідація
         if (!selection.insert_type_id) return alert('Оберіть тип вставки');
 
         let stoneData = {
             stoneType: selection.insert_type_id === 'diamond' ? 'diamond' : 'simple',
             quantity: Number(selection.quantity),
             price: 0,
-            // Для простих каменів
             stoneId: selection.catalog_stone_id, 
-            // Для діамантів передаємо параметри як об'єкт (або як ви реалізували в operations)
             diamondParams: {
                 shape: selection.dia_shape,
                 size: selection.dia_size,
@@ -100,14 +92,11 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
             stoneData.price = stone?.price_uah || 0;
         } else {
             if (!selection.dia_shape || !selection.dia_size) return alert('Заповніть параметри діаманта');
-            // Ціну діаманта тут можна або залишити 0 (щоб адмін ввів вручну потім),
-            // або додати логіку розрахунку, якщо є прайс.
             stoneData.price = 0; 
         }
 
         onAdd(stoneData);
-        
-        // Скидаємо форму і закриваємо
+
         setSelection({
             insert_type_id: '', catalog_stone_id: '', 
             dia_shape: '', dia_size: '', dia_color: '', dia_clarity: '', quantity: 1
@@ -117,7 +106,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
 
     if (!isOpen) return null;
 
-    // Фільтрація доступних каменів (ТАК САМО ЯК У ФОРМІ)
     const availableSimpleStones = dicts.simpleStones.filter(
         s => s.type_id === selection.insert_type_id && s.stock_quantity > 0
     );
@@ -133,7 +121,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
                 <div className={css.body}>
                     {loading ? <p>Завантаження...</p> : (
                         <>
-                            {/* 1. Вибір типу */}
                             <label className={css.label}>Тип вставки:</label>
                             <select 
                                 name="insert_type_id" 
@@ -145,7 +132,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
                                 {dicts.insertTypes.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
                             </select>
 
-                            {/* 2. ВАРІАНТ А: ДІАМАНТ (Конструктор) */}
                             {selection.insert_type_id === 'diamond' && (
                                 <div className={css.diamondBox}>
                                     <div className={css.grid2}>
@@ -170,7 +156,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
                                 </div>
                             )}
 
-                            {/* 3. ВАРІАНТ Б: ІНШІ КАМЕНІ (Групований список) */}
                             {selection.insert_type_id && selection.insert_type_id !== 'diamond' && (
                                 <div style={{marginTop: '15px'}}>
                                     <label className={css.label}>Оберіть камінь зі складу:</label>
@@ -182,7 +167,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
                                     >
                                         <option value="">-- Список варіантів --</option>
                                         
-                                        {/* Логіка групування (ідентична CreateOrderForm) */}
                                         {(() => {
                                             const uniqueNames = [...new Set(availableSimpleStones.map(s => s.name))];
                                             
@@ -206,7 +190,6 @@ const AddStoneModal = ({ isOpen, onClose, onAdd }) => {
                                 </div>
                             )}
 
-                            {/* 4. Кількість */}
                             <div className={css.footer}>
                                 <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
                                     <label className={css.label} style={{marginBottom:0}}>Кількість:</label>

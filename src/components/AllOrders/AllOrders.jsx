@@ -14,7 +14,7 @@ import { selectOrders, selectOrdersLoading, selectAvailableServices } from '../.
 import { fetchEmployees } from '../../redux/employees/operations';
 import { selectEmployeesList } from '../../redux/employees/selectors';
 import css from './AllOrders.module.css';
-import AddStoneModal from '../../components/AddStoneModa/AddStoneModal'; // Перевірте шлях імпорту!
+import AddStoneModal from '../../components/AddStoneModa/AddStoneModal';
 
 const ORDER_STATUSES = [
     { value: 'new', label: 'Нове' },
@@ -31,15 +31,9 @@ const AllOrders = () => {
     const employeesList = useSelector(selectEmployeesList);
     const availableServices = useSelector(selectAvailableServices);
     const loading = useSelector(selectOrdersLoading);
-
-    // --- Стани ---
     const [expandedOrderId, setExpandedOrderId] = useState(null);
     const [editingOrderId, setEditingOrderId] = useState(null);
-    
-    // Форма редагування
     const [formData, setFormData] = useState({});
-    
-    // Стани для додавання елементів
     const [newServiceId, setNewServiceId] = useState('');
     const [isStoneModalOpen, setIsStoneModalOpen] = useState(false);
     const [targetItemForStone, setTargetItemForStone] = useState(null);
@@ -51,9 +45,8 @@ const AllOrders = () => {
         dispatch(fetchEmployees());
     }, [dispatch]);
 
-    // --- Логіка перемикання ---
     const toggleOrder = (order) => {
-        if (editingOrderId && editingOrderId === order.id) return; // Не закривати, поки редагуємо
+        if (editingOrderId && editingOrderId === order.id) return;
         
         if (expandedOrderId === order.id) {
             setExpandedOrderId(null);
@@ -63,16 +56,13 @@ const AllOrders = () => {
         }
     };
 
-    // --- Логіка Редагування ---
     const startEditing = (order, item) => {
         setEditingOrderId(order.id);
         
-        console.log("Current Employee ID:", order.employee_id); // <--- Перевірте в консолі
+        console.log("Current Employee ID:", order.employee_id);
 
         setFormData({
-            // Якщо employee_id null або undefined, ставимо пустий рядок ''
             employee_id: item?.employee_id || '',
-            
             total_price: order.total_price || 0,
             deadline: order.deadline ? order.deadline.split('T')[0] : '',
             order_comment: order.order_comment || '',
@@ -92,88 +82,67 @@ const AllOrders = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-const handleSave = (orderId, itemId) => {
-    // 1. Знаходимо оригінальні дані (те, що зараз в базі)
-    const originalOrder = orders.find(o => o.id === orderId);
-    const originalItem = originalOrder?.items?.find(i => i.id === itemId);
+    const handleSave = (orderId, itemId) => {
+        const originalOrder = orders.find(o => o.id === orderId);
+        const originalItem = originalOrder?.items?.find(i => i.id === itemId);
 
-    if (!originalOrder) return;
+        if (!originalOrder) return;
 
-    const updates = {}; // Сюди складемо ТІЛЬКИ зміни
+        const updates = {};
 
-    // --- Допоміжна функція для порівняння ---
-    // Вона перевіряє: чи змінилось значення? Якщо так - записує нове (очищене від "")
-    const checkChange = (key, formValue, originalValue) => {
-        // Якщо у формі пустий рядок -> це null
-        const cleanFormValue = formValue === '' ? null : formValue;
-        
-        // Приводимо до рядка для надійного порівняння (щоб 5 не відрізнялось від "5")
-        // Але обережно з null (null != undefined)
-        if (String(cleanFormValue) !== String(originalValue || null)) {
-            // Якщо значення різні -> додаємо в updates
-            updates[key] = cleanFormValue;
+        const checkChange = (key, formValue, originalValue) => {
+            const cleanFormValue = formValue === '' ? null : formValue;
+
+            if (String(cleanFormValue) !== String(originalValue || null)) {
+                updates[key] = cleanFormValue;
+            }
+        };
+
+        const formPrice = formData.total_price === '' ? 0 : Number(formData.total_price);
+        if (formPrice !== (originalOrder.total_price || 0)) {
+            updates.total_price = formPrice;
         }
+
+        checkChange('status', formData.status, originalOrder.status);
+
+        checkChange('order_comment', formData.order_comment, originalOrder.order_comment);
+
+        const origDeadline = originalOrder.deadline ? originalOrder.deadline.split('T')[0] : null;
+        checkChange('deadline', formData.deadline, origDeadline);
+
+        if (originalItem) {
+            checkChange('size', formData.size, originalItem.size);
+            checkChange('weight_g', formData.weight_g, originalItem.weight_g);
+            checkChange('employee_id', formData.employee_id, originalItem.employee_id);
+        }
+
+        if (Object.keys(updates).length === 0) {
+            alert("Ви нічого не змінили!");
+            setEditingOrderId(null);
+            return;
+        }
+
+        console.log("Відправляємо тільки зміни:", updates);
+
+        dispatch(updateOrderFull({
+            orderId,
+            itemId,
+            updates
+        }));
+    
+        setEditingOrderId(null);
     };
 
-    // --- 2. Порівнюємо поля ЗАМОВЛЕННЯ ---
-    
-    // Ціна (конвертуємо у число для порівняння, якщо не null)
-    const formPrice = formData.total_price === '' ? 0 : Number(formData.total_price);
-    if (formPrice !== (originalOrder.total_price || 0)) {
-        updates.total_price = formPrice;
-    }
-
-    // Статус
-    checkChange('status', formData.status, originalOrder.status);
-
-    // Коментар
-    checkChange('order_comment', formData.order_comment, originalOrder.order_comment);
-
-    // Дедлайн (треба обрізати час у оригіналу '2025-05-05T...' -> '2025-05-05')
-    const origDeadline = originalOrder.deadline ? originalOrder.deadline.split('T')[0] : null;
-    checkChange('deadline', formData.deadline, origDeadline);
-
-
-    // --- 3. Порівнюємо поля ТОВАРУ (якщо він є) ---
-    if (originalItem) {
-        checkChange('size', formData.size, originalItem.size);
-        checkChange('weight_g', formData.weight_g, originalItem.weight_g);
-        checkChange('employee_id', formData.employee_id, originalItem.employee_id);
-    }
-
-    // --- 4. Відправляємо, ТІЛЬКИ якщо є зміни ---
-    if (Object.keys(updates).length === 0) {
-        alert("Ви нічого не змінили!");
-        setEditingOrderId(null); // Просто закриваємо режим редагування
-        return;
-    }
-
-    console.log("Відправляємо тільки зміни:", updates);
-
-    dispatch(updateOrderFull({
-        orderId, 
-        itemId, 
-        updates // Відлетять тільки змінені поля
-    }));
-    
-    setEditingOrderId(null);
-};
-
-    // --- Логіка Послуг ---
     const handleAddService = (orderId, itemId) => {
         if (!newServiceId) return;
-        
-        // Знаходимо послугу в довіднику
         const service = availableServices.find(s => s.id === newServiceId);
-        
-        // 👇 ВИПРАВЛЕННЯ: беремо price_fixed або price_per_item
         const correctPrice = service?.price_fixed || service?.price_per_item || 0;
 
         dispatch(addServiceToItem({
-            orderId, 
-            itemId, 
+            orderId,
+            itemId,
             serviceId: newServiceId,
-            price: correctPrice // Передаємо правильну ціну
+            price: correctPrice
         }));
         setNewServiceId('');
     };
@@ -184,7 +153,6 @@ const handleSave = (orderId, itemId) => {
         }
     };
 
-    // --- Логіка Каменів ---
     const openStoneModal = (orderId, itemId) => {
         setTargetItemForStone({ orderId, itemId });
         setIsStoneModalOpen(true);
@@ -205,9 +173,8 @@ const handleSave = (orderId, itemId) => {
         }
     };
 
-    // --- Рендер ---
-    if (loading) return <div style={{textAlign: 'center', padding: '20px'}}>Завантаження бази...</div>;
-    if (!orders || orders.length === 0) return <div style={{textAlign: 'center', padding: '40px'}}>Список порожній.</div>;
+    if (loading) return <div style={{ textAlign: 'center', padding: '20px' }}>Завантаження бази...</div>;
+    if (!orders || orders.length === 0) return <div style={{ textAlign: 'center', padding: '40px' }}>Список порожній.</div>;
 
     return (
         <div className={css.container}>
@@ -229,8 +196,6 @@ const handleSave = (orderId, itemId) => {
                         const item = order.items && order.items[0];
                         const isOpen = expandedOrderId === order.id;
                         const isEditing = editingOrderId === order.id;
-
-                        // Дані для відображення
                         const productLabel = item?.product_type?.label || 'Виріб';
                         const clientName = order.clients?.full_name || 'Гість';
                         const clientPhone = order.clients?.phone || '—';
@@ -238,7 +203,6 @@ const handleSave = (orderId, itemId) => {
 
                         return (
                             <React.Fragment key={order.id}>
-                                {/* --- ГОЛОВНИЙ РЯДОК --- */}
                                 <tr
                                     key={order.id}
                                     onClick={() => toggleOrder(order)}
@@ -294,57 +258,47 @@ const handleSave = (orderId, itemId) => {
                                     </td>
                                     <td className={css.arrow}>{isOpen ? '▼' : '▶'}</td>
                                 </tr>
-
-                                {/* --- ДЕТАЛІ (РЕДАГУВАННЯ) --- */}
                                 {isOpen && (
                                     <tr className={css.rowDetails}>
                                         <td colSpan="8" style={{ padding: '0' }}>
                                             <div className={css.detailsWrapper}>
-                                                
-                                                {/* ЛІВА КОЛОНКА: Технічні характеристики */}
+
                                                 <div>
                                                     <h4 className={css.detailsTitle}>Технічні дані</h4>
                                                     <ul className={css.detailsList}>
                                                         <li><span className={css.label}>Метал:</span> {item?.metal?.label || '—'}</li>
-                                                        
-                                                        {/* Розмір */}
+
                                                         <li>
                                                             <span className={css.label}>Розмір:</span>
                                                             {isEditing ? (
                                                                 <input type="text" name="size" className={css.inputField} value={formData.size} onChange={handleInputChange} />
                                                             ) : (item?.size || '—')}
                                                         </li>
-                                                        {/* Вага */}
+
                                                         <li>
                                                             <span className={css.label}>Вага (г):</span>
                                                             {isEditing ? (
                                                                 <input type="number" name="weight_g" className={css.inputField} value={formData.weight_g} onChange={handleInputChange} />
                                                             ) : (item?.weight_g || '—')}
                                                         </li>
-                                                        
-                                                        {/* КАМЕНІ */}
+
                                                         <li>
                                                             <span className={css.label}>Вставка:</span>
                                                             <div style={{ marginTop: '5px' }}>
                                                                 {item?.stones && item.stones.length > 0 ? (
                                                                     item.stones.map((st, i) => {
-                                                                        
-                                                                        // --- ЛОГІКА ВІДОБРАЖЕННЯ НАЗВИ ---
+
                                                                         let displayText = '';
 
                                                                         if (st.catalog_stone) {
-                                                                            // 1. Пріоритет: Якщо це камінь з каталогу
                                                                             displayText = `${st.catalog_stone.name} (${st.catalog_stone.shape})`;
                                                                         }
                                                                         else if (st.description) {
-                                                                            // 2. Пріоритет: Якщо це діамант під замовлення (беремо опис з бази)
                                                                             displayText = st.description;
                                                                         }
                                                                         else {
-                                                                            // 3. Якщо пусто і там, і там (помилка даних)
                                                                             displayText = 'Невідомий камінь';
                                                                         }
-                                                                        // ----------------------------------
 
                                                                         return (
                                                                             <div key={i} className={css.serviceTag} style={{ marginBottom: '5px' }}>
@@ -367,7 +321,6 @@ const handleSave = (orderId, itemId) => {
                                                                 )}
                                                             </div>
 
-                                                            {/* Кнопка додавання каменю */}
                                                             {isEditing && (
                                                                 <button
                                                                     className={css.btnAddSmall}
@@ -381,7 +334,6 @@ const handleSave = (orderId, itemId) => {
                                                     </ul>
                                                 </div>
 
-                                                {/* ПРАВА КОЛОНКА: Орг. питання та Керування */}
                                                 <div>
                                                     <h4 className={css.detailsTitle}>Організація та Статус</h4>
                                                     <ul className={css.detailsList}>
@@ -398,7 +350,6 @@ const handleSave = (orderId, itemId) => {
                                                             ) : (order.deadline ? new Date(order.deadline).toLocaleDateString() : 'Не вказано')}
                                                         </li>
                                                         
-                                                        {/* ПОСЛУГИ */}
                                                         <li>
                                                             <span className={css.label}>Послуги:</span>
                                                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', margin: '5px 0' }}>
@@ -424,7 +375,6 @@ const handleSave = (orderId, itemId) => {
                                                         </li>
                                                     </ul>
 
-                                                    {/* БЛОК РЕДАГУВАННЯ СТАТУСУ */}
                                                     <div className={css.editBlock}>
                                                         <div style={{ marginBottom: '10px' }}>
                                                             <span className={css.label}>Статус:</span>
@@ -444,7 +394,6 @@ const handleSave = (orderId, itemId) => {
                                                             )}
                                                         </div>
 
-                                                        {/* КНОПКИ ДІЙ */}
                                                         <div className={css.actionButtons}>
                                                             {isEditing ? (
                                                                 <>
@@ -473,9 +422,7 @@ const handleSave = (orderId, itemId) => {
                     })}
                 </tbody>
             </table>
-
-            {/* 👇 МОДАЛКА */}
-            <AddStoneModal 
+            <AddStoneModal
                 isOpen={isStoneModalOpen}
                 onClose={() => setIsStoneModalOpen(false)}
                 onAdd={handleAddStone}
@@ -484,7 +431,6 @@ const handleSave = (orderId, itemId) => {
     );
 };
 
-// Бейдж статусу
 const StatusBadge = ({ status }) => {
     const statusMap = {
         new: 'Нове', modeling: '3D Модель', casting: 'Лиття', 

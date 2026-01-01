@@ -1,23 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-
-// Імпорти Redux
 import { register } from '../../redux/auth/operations';
 import { selectAuthError, selectIsLoggedIn } from '../../redux/auth/selectors';
-
-// Імпорт стилів
 import css from './RegisterForm.module.css';
 
 const RegisterForm = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    
-    // Стани Redux
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const error = useSelector(selectAuthError);
-
-    // Локальний стейт форми
     const [formData, setFormData] = useState({
         full_name: '',
         phone: '',
@@ -25,7 +17,6 @@ const RegisterForm = () => {
         password: ''
     });
 
-    // Редірект, якщо користувач вже залогінений
     useEffect(() => {
         if (isLoggedIn) {
             navigate('/client');

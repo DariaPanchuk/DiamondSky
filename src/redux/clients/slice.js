@@ -10,7 +10,6 @@ const clientsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch
             .addCase(fetchClients.pending, (state) => {
                 state.isLoading = true;
             })
@@ -22,7 +21,6 @@ const clientsSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
-            // Add & Update (просто знімаємо лоадер)
             .addCase(addClient.pending, (state) => { state.isLoading = true; })
             .addCase(addClient.fulfilled, (state) => { state.isLoading = false; })
             .addCase(addClient.rejected, (state, action) => {

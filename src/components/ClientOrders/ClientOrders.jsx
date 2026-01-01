@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrders } from '../../redux/orders/operations';
 import { selectOrders, selectOrdersLoading } from '../../redux/orders/selectors';
-import css from './ClientOrders.module.css'; // Імпорт стилів
+import css from './ClientOrders.module.css'; 
 
 const ClientOrders = () => {
     const dispatch = useDispatch();
@@ -50,7 +50,6 @@ const ClientOrders = () => {
 
                         return (
                             <>
-                                {/* --- ГОЛОВНИЙ РЯДОК --- */}
                                 <tr 
                                     key={order.id} 
                                     onClick={() => toggleOrder(order.id)}
@@ -73,13 +72,11 @@ const ClientOrders = () => {
                                     <td className={css.arrow}>{isOpen ? '▼' : '▶'}</td>
                                 </tr>
 
-                                {/* --- ДЕТАЛІ --- */}
                                 {isOpen && (
                                     <tr className={css.rowDetails}>
                                         <td colSpan="6" style={{ padding: '0' }}>
                                             <div className={css.detailsWrapper}>
                                                 
-                                                {/* ЛІВА КОЛОНКА */}
                                                 <div>
                                                     <h4 className={css.detailsTitle}>Характеристики</h4>
                                                     <ul className={css.detailsList}>
@@ -115,7 +112,6 @@ const ClientOrders = () => {
                                                     </ul>
                                                 </div>
 
-                                                {/* ПРАВА КОЛОНКА */}
                                                 <div>
                                                     <h4 className={css.detailsTitle}>Деталі</h4>
                                                     
@@ -159,7 +155,6 @@ const ClientOrders = () => {
     );
 };
 
-// --- ДОПОМІЖНИЙ КОМПОНЕНТ ДЛЯ БЕЙДЖА ---
 const StatusBadge = ({ status }) => {
     const statusMap = {
         new: 'Нове',
@@ -170,8 +165,6 @@ const StatusBadge = ({ status }) => {
         issued: 'Видано'
     };
 
-    // Формуємо ім'я класу динамічно: status_new, status_done і т.д.
-    // Якщо статус невідомий - використовуємо status_default
     const className = `${css.badge} ${css[`status_${status}`] || css.status_default}`;
     const label = statusMap[status] || status;
 
